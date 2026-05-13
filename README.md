@@ -39,14 +39,14 @@ LANDELA a pour objectif de :
 - Suivi des présences
 - Filtrage par rôle/poste
 
-## 🕒 Gestion des Présences
+##  Gestion des Présences
 - Présence
 - Absence
 - Retard
 - Historique des présences
 - Calendrier de suivi
 
-## 📡 Intégration NFC
+##  Intégration NFC
 - Lecture des cartes NFC
 - Pointage automatique
 - Identification rapide des utilisateurs
