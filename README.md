@@ -53,7 +53,7 @@ LANDELA a pour objectif de :
 
 ---
 
-# 🛠️ Stack Technique
+# Stack Technique
 
 ## Frontend
 - React
@@ -215,6 +215,6 @@ Le projet est développé en équipe avec :
 
 ---
 
-# 📄 Licence
+#  Licence
 
 Projet développé dans un cadre éducatif et professionnel.
