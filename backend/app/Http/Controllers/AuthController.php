@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
 
 class AuthController extends Controller
 {
@@ -46,7 +45,7 @@ class AuthController extends Controller
             ],
         ], 200);
     }
-    public function me(Request $request)
+    public function me()
     {
         /** @var \App\Models\User|null $user */
         $user = Auth::user();
