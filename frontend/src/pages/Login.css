@@ -44,7 +44,7 @@
 }
 
 .brand-logo {
-  max-width: 140px;
+  max-width: 300px;
   height: auto;
   display: block;
   margin-bottom: 2rem;
@@ -75,217 +75,242 @@
   line-height: 1.6;
   margin: 1rem 0 2rem;
 }
-
-.brand-features {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  font-size: 0.95rem;
+.brand-features-carousel {
+  height: 130px;
+  overflow: hidden;
+  position: relative;
+  margin-top: 1.5rem;
+  mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
 }
 
-.brand-features div {
+.carousel-track {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  animation: scrollVertical 12s linear infinite;
+}
+
+.brand-features-carousel:hover .carousel-track {
+  animation-play-state: paused;
+}
+
+.feature-item {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  color: rgba(255,255,255,0.9);
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.9);
 }
 
-.brand-features div span {
+.feature-check {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 22px;
   height: 22px;
-  background: rgba(255,255,255,0.15);
+  min-width: 22px;
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 50%;
   font-weight: 700;
   font-size: 0.8rem;
   color: #a8d5ff;
 }
 
+@keyframes scrollVertical {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
 /* Partie droite - formulaire */
+/* Partie droite - panneau avec fond gris très doux */
 .login-panel {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: #ffffff;
+  background: #e6ecf0; /* Fond neutre pour faire ressortir la carte Neumorphique */
 }
 
-.login-card {
+/* Carte Neumorphique Blanche / Gris Perle */
+.neumorphic-card, .login-card {
   width: 100%;
   max-width: 400px;
-  padding: 2.5rem 2rem;
-  border-radius: 24px;
-  background: white;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.06);
+  background-color: #e6ecf0;
+  border-radius: 30px;
+  padding: 2.5rem 2rem 2rem;
+  box-shadow: 12px 12px 24px #c2c9cf, 
+              -12px -12px 24px #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
+/* Petit logo mobile */
 .mobile-logo {
-  display: none;
-  max-width: 80px;
-  height: auto;
-  margin: 0 auto 1.5rem;
+  height: 32px;
+  width: auto;
+  object-fit: contain;
+  margin-bottom: 1rem;
+}
+
+/* Cercle Logo Neumorphique bombé */
+.neumorphic-logo-container {
+  width: 85px;
+  height: 85px;
+  border-radius: 50%;
+  background-color: #e6ecf0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+  box-shadow: 6px 6px 12px #c2c9cf, 
+              -6px -6px 12px #ffffff;
+  padding: 12px;
+}
+
+.neumorphic-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .login-header {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .eyebrow {
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  color: #64748b;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
+  color: #0b2b4a;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
 }
 
 .login-header h2 {
   font-size: 1.8rem;
-  font-weight: 600;
-  color: #0b2b4a;
+  font-weight: 700;
+  color: #1e293b;
   margin-bottom: 0.25rem;
 }
 
 .login-header p {
   color: #64748b;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
 }
 
-/* Erreur générale */
+/* Erreur générale neumorphique */
 .general-error {
+  width: 100%;
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  background: #fef2f2;
-  border-left: 4px solid #dc2626;
+  background: #e6ecf0;
   padding: 0.8rem 1rem;
-  border-radius: 8px;
+  border-radius: 16px;
   margin-bottom: 1.5rem;
-  color: #991b1b;
+  color: #dc2626;
+  font-size: 0.85rem;
+  box-shadow: inset 3px 3px 6px #c2c9cf, 
+              inset -3px -3px 6px #ffffff;
+}
+
+.neumorphic-form {
+  width: 100%;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+  text-align: left;
+}
+
+/* Champs de texte enfoncés (Inset) */
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: #e6ecf0;
+  border-radius: 18px;
+  padding: 0 1rem;
+  box-shadow: inset 4px 4px 8px #c2c9cf, 
+              inset -4px -4px 8px #ffffff;
+}
+
+.input-icon {
+  color: #0b2b4a;
+  margin-right: 0.6rem;
   font-size: 0.9rem;
 }
 
-.general-error span {
-  font-weight: 700;
-  font-size: 1.2rem;
-}
-
-/* Champs du formulaire */
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-.form-group label {
-  display: block;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 0.4rem;
-}
-
-.form-group input {
+.neumorphic-input, .form-group input {
   width: 100%;
-  padding: 0.75rem 1rem;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 10px;
-  font-size: 0.95rem;
-  transition: all 0.2s;
-  background: #f8fafc;
-  color: #0f172a;
-}
-
-.form-group input:focus {
+  padding: 0.85rem 0;
+  border: none !important;
+  background: transparent !important;
   outline: none;
-  border-color: #1a4b6d;
-  background: white;
-  box-shadow: 0 0 0 3px rgba(26, 75, 109, 0.1);
+  font-size: 0.9rem;
+  color: #1e293b;
 }
 
-.form-group input.input-error {
-  border-color: #dc2626;
-  background: #fff5f5;
+.neumorphic-input::placeholder, .form-group input::placeholder {
+  color: #94a3b8;
 }
 
-.form-group input.input-error:focus {
-  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+.password-toggle {
+  background: none;
+  border: none;
+  color: #0b2b4a;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding-left: 0.5rem;
 }
 
 .field-error {
   display: block;
-  margin-top: 0.3rem;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: #dc2626;
+  margin-top: 0.4rem;
+  padding-left: 0.8rem;
 }
 
-.password-label {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.password-wrapper {
-  position: relative;
-}
-
-.password-wrapper input {
-  padding-right: 4.5rem;
-}
-
-.password-toggle {
-  position: absolute;
-  right: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: #64748b;
-  font-size: 0.8rem;
-  font-weight: 500;
-  cursor: pointer;
-  padding: 0.25rem 0.5rem;
-  border-radius: 6px;
-  transition: background 0.2s;
-}
-
-.password-toggle:hover {
-  background: #f1f5f9;
-}
-
-/* Bouton de connexion */
+/* Bouton bleu foncé bombé */
 .login-button {
   width: 100%;
-  padding: 0.85rem;
-  background: #0b2b4a;
-  color: white;
+  padding: 0.9rem;
+  margin-top: 0.75rem;
   border: none;
-  border-radius: 10px;
-  font-size: 1rem;
+  border-radius: 18px;
+  background-color:  #103e6a;
+  color: #ffffff;
+  font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  box-shadow: 5px 5px 12px #c2c9cf, 
+              -5px -5px 12px #ffffff;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  margin-top: 0.5rem;
 }
 
 .login-button:hover:not(:disabled) {
-  background: #1a4b6d;
+  background-color: #133c64;
   transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(11, 43, 74, 0.2);
 }
 
 .login-button:active:not(:disabled) {
   transform: translateY(0);
-}
-
-.login-button:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
+  box-shadow: inset 3px 3px 6px #06182a, 
+              inset -3px -3px 6px #103e6a;
 }
 
 .spinner {
