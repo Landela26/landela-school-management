@@ -13,7 +13,6 @@ function Login() {
     password: '',
   })
 
-  // Une seule source pour les erreurs du formulaire
   const [errors, setErrors] = useState({
     general: '',
   })
@@ -33,7 +32,6 @@ function Login() {
       [name]: value,
     }))
 
-    // On efface le message dès que l'utilisateur recommence à saisir
     if (errors.general) {
       setErrors({ general: '' })
     }
@@ -43,7 +41,7 @@ function Login() {
     const email = formData.email.trim()
     const password = formData.password
 
-    // Un seul message pour toutes les erreurs de saisie
+
     if (!email || !password.trim()) {
       setErrors({
         general: 'Identifiant ou mot de passe incorrect.',
@@ -52,7 +50,7 @@ function Login() {
       return false
     }
 
-    // Limite standard raisonnable pour une adresse email
+
     if (email.length > 254) {
       setErrors({
         general: 'Identifiant ou mot de passe incorrect.',
@@ -61,7 +59,7 @@ function Login() {
       return false
     }
 
-    // Empêche les espaces dans une adresse email
+ 
     if (/\s/.test(email)) {
       setErrors({
         general: 'Identifiant ou mot de passe incorrect.',
@@ -70,7 +68,6 @@ function Login() {
       return false
     }
 
-    // Validation basique du format email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
     if (!emailRegex.test(email)) {
@@ -96,7 +93,7 @@ function Login() {
     setIsSubmitting(true)
 
     try {
-      // On utilise l'email nettoyé
+
       const email = formData.email.trim()
 
       await login(email, formData.password)
@@ -105,10 +102,7 @@ function Login() {
     } catch (error) {
       const status = error?.response?.status
 
-      /*
-       * Sécurité :
-       * On ne révèle jamais si l'email existe ou non.
-       */
+    
       if (status === 401 || status === 422) {
         setErrors({
           general: 'Identifiant ou mot de passe incorrect.',
@@ -159,7 +153,6 @@ function Login() {
                 'Rapports & statistiques automatisés',
                 "Gestion d'établissement",
 
-                // Duplication pour la boucle
                 'Suivi des présences en temps réel',
                 'Données centralisées & sécurisées',
                 'Fonctionnement adapté aux organisations',
@@ -225,13 +218,6 @@ function Login() {
 
               <div className="input-wrapper">
 
-                <span
-                  className="input-icon"
-                  aria-hidden="true"
-                >
-                  @
-                </span>
-
                 <input
                   id="email"
                   name="email"
@@ -254,13 +240,6 @@ function Login() {
             <div className="form-group">
 
               <div className="input-wrapper">
-
-                <span
-                  className="input-icon"
-                  aria-hidden="true"
-                >
-                  •
-                </span>
 
                 <input
                   id="password"
@@ -312,7 +291,7 @@ function Login() {
                 role="alert"
                 aria-live="polite"
               >
-                <span className="error-icon">
+                <span className="error-icon" aria-hidden="true">
                   !
                 </span>
 
