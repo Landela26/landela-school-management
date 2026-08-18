@@ -1,69 +1,77 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-import { getMe, login as loginService, logout as logoutService } from '../services/authService';
-
-// Création du contexte
-const AuthContext = createContext(null);
+import { useEffect, useState } from 'react'
+import { AuthContext } from './AuthContext'
+import {
+  getMe,
+  login as loginService,
+  logout as logoutService,
+} from '../services/authService'
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
 
-  // Restaurer la session au démarrage
   useEffect(() => {
     async function restoreSession() {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          setLoading(false);
-          return;
-        }
+      const token = localStorage.getItem('token')
 
-        const response = await getMe();
-        setUser(response.data);
+      if (!token) {
+        setLoading(false)
+        return
+      }
+
+      try {
+        const response = await getMe()
+
+        setUser(response.data.data)
       } catch (error) {
-        console.error('Erreur de restauration :', error);
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        setUser(null);
+        console.error('Erreur de restauration :', error)
+
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+
+        setUser(null)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     }
 
-    restoreSession();
-  }, []);
+    restoreSession()
+  }, [])
 
-  // Connexion
   const login = async (email, password) => {
-    const response = await loginService(email, password);
-    localStorage.setItem('token', response.data.token);
-    localStorage.setItem('user', JSON.stringify(response.data.user));
-    setUser(response.data.user);
-    return response;
-  };
+    const response = await loginService(email, password)
 
-  // Déconnexion
+    const userData = response.data.data.user
+    const token = response.data.data.token
+
+    localStorage.setItem('token', token)
+    localStorage.setItem('user', JSON.stringify(userData))
+
+    setUser(userData)
+
+    return response
+  }
+
   const logout = () => {
-    logoutService();
-    setUser(null);
-  };
+    logoutService()
+
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+
+    setUser(null)
+  }
 
   const value = {
     user,
     loading,
-    isAuthenticated: !!user,  // ← c'est ce que Login attend
+    isAuthenticated: Boolean(user),
     login,
     logout,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
-
-// Hook personnalisé
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth doit être utilisé dans un AuthProvider');
   }
-  return context;
+
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  )
 }
