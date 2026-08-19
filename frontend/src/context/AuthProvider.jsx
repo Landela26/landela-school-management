@@ -12,22 +12,14 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     async function restoreSession() {
-      const token = localStorage.getItem('token')
-
-      if (!token) {
-        setLoading(false)
-        return
-      }
-
       try {
         const response = await getMe()
 
-        setUser(response.data.data)
+        setUser(response.data)
       } catch (error) {
-        console.error('Erreur de restauration :', error)
-
-        localStorage.removeItem('token')
-        localStorage.removeItem('user')
+        if (error.response?.status !== 401) {
+          console.error('Erreur de restauration :', error)
+        }
 
         setUser(null)
       } finally {
@@ -42,23 +34,18 @@ export function AuthProvider({ children }) {
     const response = await loginService(email, password)
 
     const userData = response.data.user
-    const token = response.data.token
-
-    localStorage.setItem('token', token)
-    localStorage.setItem('user', JSON.stringify(userData))
 
     setUser(userData)
 
     return response
   }
 
-  const logout = () => {
-    logoutService()
-
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
-
-    setUser(null)
+  const logout = async () => {
+    try {
+      await logoutService()
+    } finally {
+      setUser(null)
+    }
   }
 
   const value = {

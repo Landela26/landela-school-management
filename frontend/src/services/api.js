@@ -1,39 +1,46 @@
+
+
+// import axios from 'axios'
+
+// const api = axios.create({
+//   baseURL: 'http://localhost:8000/api',
+//   withCredentials: true,
+//   withXSRFToken: true,
+//   headers: {
+//     Accept: 'application/json',
+//     'Content-Type': 'application/json',
+//   },
+// })
+
+// export const csrf = axios.create({
+//   baseURL:
+//     import.meta.env.VITE_API_URL?.replace(/\/api$/, '') ||
+//     'http://127.0.0.1:8000',
+//   withCredentials: true,
+// })
+
+// export default api
+
+
 import axios from 'axios'
 
+const API_URL =
+  import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api',
+  baseURL: API_URL,
+  withCredentials: true,
+  withXSRFToken: true,
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
   },
 })
 
-// Ajouter automatiquement le token aux requêtes protégées
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token')
-
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-
-    return config
-  },
-  (error) => Promise.reject(error),
-)
-
-// Gestion globale des réponses
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    // Token expiré ou invalide
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token')
-      localStorage.removeItem('user')
-    }
-
-    return Promise.reject(error)
-  },
-)
+export const csrf = axios.create({
+  baseURL: API_URL.replace(/\/api$/, ''),
+  withCredentials: true,
+  withXSRFToken: true,
+})
 
 export default api
