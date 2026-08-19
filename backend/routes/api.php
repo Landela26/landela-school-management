@@ -2,7 +2,14 @@
 
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Session\Middleware\StartSession;
 
-Route::post('/auth/login', [AuthController::class, 'login']);
+Route::middleware([StartSession::class])->group(function () {
 
-Route::middleware('auth:sanctum')->get('/auth/me', [AuthController::class, 'me']);
+    Route::post('/auth/login', [AuthController::class, 'login']);
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/auth/me', [AuthController::class, 'me']);
+        Route::post('/auth/logout', [AuthController::class, 'logout']);
+    });
+});

@@ -2,13 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 
 class AuthController extends Controller
 {
-    public function login(LoginRequest $request)
+    /**
+     * Connexion de l'utilisateur.
+     */
+    public function login(LoginRequest $request): JsonResponse
     {
         $credentials = $request->validated();
 
@@ -19,36 +24,36 @@ class AuthController extends Controller
             ], 401);
         }
 
-        /** @var \App\Models\User|null $user */
+        $request->session()->regenerate();
+
+        /** @var \App\Models\Utilisateur $user */
         $user = Auth::user();
 
-        if (!$user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Utilisateur non authentifié.',
-            ], 401);
-        }
-
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $user->update([
+            'derniere_connexion' => now(),
+        ]);
 
         return response()->json([
             'success' => true,
             'message' => 'Connexion réussie.',
             'data' => [
                 'user' => [
-                    'user_id' => $user->id,
-                    'name' => $user->name,
+                    'id_utilisateur' => $user->id_utilisateur,
+                    'username' => $user->username,
                     'email' => $user->email,
                     'role' => $user->role,
                 ],
-                'token' => $token,
             ],
-        ], 200);
+        ]);
     }
-    public function me()
+
+    /**
+     * Retourne l'utilisateur actuellement connecté.
+     */
+    public function me(Request $request): JsonResponse
     {
-        /** @var \App\Models\User|null $user */
-        $user = Auth::user();
+        /** @var \App\Models\Utilisateur|null $user */
+        $user = $request->user();
 
         if (!$user) {
             return response()->json([
@@ -61,11 +66,28 @@ class AuthController extends Controller
             'success' => true,
             'message' => 'Informations de l’utilisateur récupérées avec succès.',
             'data' => [
-                'user_id' => $user->id,
-                'name' => $user->name,
+                'id_utilisateur' => $user->id_utilisateur,
+                'username' => $user->username,
                 'email' => $user->email,
                 'role' => $user->role,
+                'actif' => $user->actif,
             ],
-        ], 200);
+        ]);
+    }
+
+    /**
+     * Déconnexion.
+     */
+    public function logout(Request $request): JsonResponse
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Déconnexion réussie.',
+        ]);
     }
 }
