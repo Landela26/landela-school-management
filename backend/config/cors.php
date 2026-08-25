@@ -18,21 +18,23 @@ return [
 
     'allowed_origins' => [
         'http://localhost:5173',
+        'http://localhost:5174',
+        'http://localhost:5175',
     ],
 
     'allowed_origins_patterns' => [],
 
     'allowed_headers' => [
         'Content-Type',
+        'Authorization',
         'Accept',
         'X-Requested-With',
-        'X-XSRF-TOKEN',
     ],
 
     'exposed_headers' => [],
 
     'max_age' => 0,
 
-    'supports_credentials' => true,
+    'supports_credentials' => false,
 
 ];
