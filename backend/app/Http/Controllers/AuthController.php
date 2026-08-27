@@ -2,72 +2,92 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Cookie;
 
 class AuthController extends Controller
 {
-   public function login(LoginRequest $request)
-{
-    $credentials = $request->validated();
+    /**
+     * Connexion de l'utilisateur.
+     */
+    public function login(LoginRequest $request): JsonResponse
+    {
+        $credentials = $request->validated();
 
-    if (!Auth::attempt($credentials)) {
+        if (!Auth::attempt($credentials)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Email ou mot de passe incorrect.',
+            ], 401);
+        }
+
+        $request->session()->regenerate();
+
+        /** @var \App\Models\Utilisateur $user */
+        $user = Auth::user();
+
+        $user->update([
+            'derniere_connexion' => now(),
+        ]);
+
         return response()->json([
-            'success' => false,
-            'message' => 'Email ou mot de passe incorrect.',
-        ], 401);
+            'success' => true,
+            'message' => 'Connexion réussie.',
+            'data' => [
+                'user' => [
+                    'id_utilisateur' => $user->id_utilisateur,
+                    'username' => $user->username,
+                    'email' => $user->email,
+                    'role' => $user->role,
+                ],
+            ],
+        ], 200);
     }
 
-    $request->session()->regenerate();
-
-    /** @var \App\Models\User $user */
-    $user = Auth::user();
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Connexion réussie.',
-        'data' => [
-            'user' => [
-                'user_id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'role' => $user->role,
-            ],
-        ],
-    ], 200);
-}
-    public function me()
+    /**
+     * Retourne l'utilisateur actuellement connecté.
+     */
+    public function me(Request $request): JsonResponse
     {
-        /** @var \App\Models\User|null $user */
-        $user = Auth::user();
+        /** @var \App\Models\Utilisateur|null $user */
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Utilisateur non authentifié.',
+            ], 401);
+        }
 
         return response()->json([
             'success' => true,
             'message' => 'Informations de l’utilisateur récupérées avec succès.',
             'data' => [
-                'user_id' => $user->id,
-                'name' => $user->name,
+                'id_utilisateur' => $user->id_utilisateur,
+                'username' => $user->username,
                 'email' => $user->email,
                 'role' => $user->role,
+                'actif' => $user->actif,
             ],
-        ], 200);
+        ]);
     }
 
+    /**
+     * Déconnexion.
+     */
+    public function logout(Request $request): JsonResponse
+    {
+        Auth::guard('web')->logout();
 
-    public function logout(Request $request)
-{
-    Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Déconnexion réussie.',
-    ]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Déconnexion réussie.',
+        ]);
+    }
 }
-}
-
