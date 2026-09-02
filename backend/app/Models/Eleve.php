@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Eleve extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'eleves';
 
@@ -33,6 +34,7 @@ class Eleve extends Model
     protected $casts = [
         'date_naissance' => 'date',
         'date_creation' => 'datetime',
+        'deleted_at' => 'datetime',
     ];
 
     /**
