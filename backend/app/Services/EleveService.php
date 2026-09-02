@@ -32,7 +32,7 @@ class EleveService
             }
 
             return Eleve::create([
-                'matricule' => null,
+                'matricule' => $donnees['matricule'] ?? null,
                 'nom' => $donnees['nom'],
                 'postnom' => $donnees['postnom'],
                 'prenom' => $donnees['prenom'],
