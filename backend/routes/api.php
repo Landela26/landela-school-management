@@ -3,8 +3,8 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EleveController;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Route;
 
 Route::middleware([StartSession::class])->group(function () {
 
@@ -19,6 +19,7 @@ Route::middleware([StartSession::class])->group(function () {
     Route::middleware('auth:sanctum')->get('/dashboard', [DashboardController::class, 'index']);
 
     //eleve route
+    Route::middleware('auth:sanctum')->get("/students", [EleveController::class, 'index']);
     Route::middleware('auth:sanctum')->post("/students", [EleveController::class, 'store']);
     Route::middleware('auth:sanctum')->put("/students/{id}", [EleveController::class, 'update']);
 });
