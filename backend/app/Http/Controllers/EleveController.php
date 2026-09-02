@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateEleveRequest;
 use App\Models\Eleve;
 use App\Services\EleveService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class EleveController extends Controller
 {
@@ -15,6 +16,54 @@ class EleveController extends Controller
         private readonly EleveService $eleveService
     ) {}
 
+    /**
+     * Liste des élèves avec pagination et filtres.
+     */
+    public function index(Request $request): JsonResponse
+    {
+        $query = Eleve::query();
+
+        if ($request->filled('nom')) {
+            $query->where('nom', 'like', '%' . $request->nom . '%');
+        }
+
+        if ($request->filled('postnom')) {
+            $query->where('postnom', 'like', '%' . $request->postnom . '%');
+        }
+
+        if ($request->filled('prenom')) {
+            $query->where('prenom', 'like', '%' . $request->prenom . '%');
+        }
+
+        if ($request->filled('matricule')) {
+            $query->where('matricule', 'like', '%' . $request->matricule . '%');
+        }
+
+        if ($request->filled('sexe')) {
+            $query->where('sexe', $request->sexe);
+        }
+
+        if ($request->filled('dateNaissance')) {
+            $query->whereDate('date_naissance', $request->dateNaissance);
+        }
+
+        if ($request->filled('adresse')) {
+            $query->where('adresse', 'like', '%' . $request->adresse . '%');
+        }
+
+        if ($request->filled('statut')) {
+            $query->where('statut', $request->statut);
+        }
+
+        $eleves = $query
+            ->orderByDesc('id_eleve')
+            ->paginate(20);
+
+        return response()->json([
+            'success' => true,
+            'data' => $eleves,
+        ]);
+    }
     /**
      * Créer un nouvel élève.
      */
