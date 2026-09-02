@@ -20,4 +20,5 @@ Route::middleware([StartSession::class])->group(function () {
 
     //eleve route
     Route::middleware('auth:sanctum')->post("/students", [EleveController::class, 'store']);
+    Route::middleware('auth:sanctum')->put("/students/{id}", [EleveController::class, 'update']);
 });

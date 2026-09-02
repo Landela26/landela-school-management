@@ -2,16 +2,22 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Foundation\Http\FormRequest;
 
-class StoreEleveRequest extends FormRequest
+class UpdateEleveRequest extends FormRequest
 {
+    /**
+     * Autoriser la requête.
+     */
     public function authorize(): bool
     {
         return true;
     }
 
+    /**
+     * Règles de validation.
+     */
     public function rules(): array
     {
         return [
@@ -41,7 +47,7 @@ class StoreEleveRequest extends FormRequest
 
             'sexe' => [
                 'required',
-                Rule::in(['M', 'F']),
+                'in:M,F',
             ],
 
             'dateNaissance' => [
@@ -65,6 +71,9 @@ class StoreEleveRequest extends FormRequest
         ];
     }
 
+    /**
+     * Messages de validation.
+     */
     public function messages(): array
     {
         return [
@@ -94,12 +103,11 @@ class StoreEleveRequest extends FormRequest
             'adresse.string' => 'L’adresse doit être une chaîne de caractères.',
             'adresse.max' => 'L’adresse ne peut pas dépasser 255 caractères.',
 
-            'photo.image' => 'La photo doit être une image.',
+            'photo.image' => 'La photo doit être une image valide.',
             'photo.mimes' => 'La photo doit être au format JPG, JPEG, PNG ou WEBP.',
             'photo.max' => 'La photo ne peut pas dépasser 2 Mo.',
         ];
     }
-
     public function attributes(): array
     {
         return [
