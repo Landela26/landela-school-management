@@ -2,31 +2,29 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateEleveRequest extends FormRequest
 {
-    /**
-     * Autoriser la requête.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Règles de validation.
-     */
     public function rules(): array
     {
+        $eleveId = $this->route('id');
+
         return [
             'matricule' => [
                 'nullable',
                 'string',
                 'max:50',
-                Rule::unique('eleves', 'matricule'),
+                Rule::unique('eleves', 'matricule')
+                    ->ignore($eleveId, 'id_eleve'),
             ],
+
             'nom' => [
                 'required',
                 'string',
@@ -47,7 +45,7 @@ class UpdateEleveRequest extends FormRequest
 
             'sexe' => [
                 'required',
-                'in:M,F',
+                Rule::in(['M', 'F']),
             ],
 
             'dateNaissance' => [
@@ -71,15 +69,13 @@ class UpdateEleveRequest extends FormRequest
         ];
     }
 
-    /**
-     * Messages de validation.
-     */
     public function messages(): array
     {
         return [
             'matricule.string' => 'Le matricule doit être une chaîne de caractères.',
             'matricule.max' => 'Le matricule ne peut pas dépasser 50 caractères.',
             'matricule.unique' => 'Ce matricule est déjà utilisé par un autre élève.',
+
             'nom.required' => 'Le nom est obligatoire.',
             'nom.string' => 'Le nom doit être une chaîne de caractères.',
             'nom.max' => 'Le nom ne peut pas dépasser 255 caractères.',
@@ -103,11 +99,12 @@ class UpdateEleveRequest extends FormRequest
             'adresse.string' => 'L’adresse doit être une chaîne de caractères.',
             'adresse.max' => 'L’adresse ne peut pas dépasser 255 caractères.',
 
-            'photo.image' => 'La photo doit être une image valide.',
+            'photo.image' => 'La photo doit être une image.',
             'photo.mimes' => 'La photo doit être au format JPG, JPEG, PNG ou WEBP.',
             'photo.max' => 'La photo ne peut pas dépasser 2 Mo.',
         ];
     }
+
     public function attributes(): array
     {
         return [
