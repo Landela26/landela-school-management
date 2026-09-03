@@ -36,35 +36,34 @@ function Login() {
       setErrors({ general: '' })
     }
   }
+const validateForm = () => {
+  const email = formData.email.trim()
+  const password = formData.password
 
-  const validateForm = () => {
-    const email = formData.email.trim()
-    const password = formData.password
-
-    if (!email || !password.trim()) {
-      setErrors({ general: 'Identifiant ou mot de passe incorrect.' })
-      return false
-    }
-
-    if (email.length > 254) {
-      setErrors({ general: 'Identifiant ou mot de passe incorrect.' })
-      return false
-    }
-
-    if (/\s/.test(email)) {
-      setErrors({ general: 'Identifiant ou mot de passe incorrect.' })
-      return false
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
-
-    if (!emailRegex.test(email)) {
-      setErrors({ general: 'Identifiant ou mot de passe incorrect.' })
-      return false
-    }
-
-    return true
+  if (!email || !password) {
+    setErrors({ general: 'Identifiant ou mot de passe incorrect.' })
+    return false
   }
+
+  if (email.length > 254) {
+    setErrors({ general: 'Identifiant ou mot de passe incorrect.' })
+    return false
+  }
+
+  if (/\s/.test(email)) {
+    setErrors({ general: 'Identifiant ou mot de passe incorrect.' })
+    return false
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
+
+  if (!emailRegex.test(email)) {
+    setErrors({ general: 'Identifiant ou mot de passe incorrect.' })
+    return false
+  }
+
+  return true
+}
 
   const handleSubmit = async (event) => {
     event.preventDefault()
