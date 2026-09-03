@@ -1,160 +1,149 @@
-import { useState } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/useAuth";
-import logo from "../assets/logo-landela.png";
-import "./Login.css";
+import { useState } from 'react'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/useAuth'
+import logo from '../assets/logo-landela.png'
 
 function Login() {
-  const navigate = useNavigate();
-  const { login, isAuthenticated } = useAuth();
+  const navigate = useNavigate()
+  const { login, isAuthenticated } = useAuth()
 
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+    email: '',
+    password: '',
+  })
 
+ 
   const [errors, setErrors] = useState({
-    general: "",
-  });
+    general: '',
+  })
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/dashboard" replace />
   }
 
   const handleChange = (event) => {
-    const { name, value } = event.target;
+    const { name, value } = event.target
 
     setFormData((previous) => ({
       ...previous,
       [name]: value,
-    }));
+    }))
 
     if (errors.general) {
-      setErrors({ general: "" });
+      setErrors({ general: '' })
     }
-  };
+  }
 
   const validateForm = () => {
-    const email = formData.email.trim();
-    const password = formData.password;
+    const email = formData.email.trim()
+    const password = formData.password
 
     if (!email || !password.trim()) {
-      setErrors({
-        general: "Identifiant ou mot de passe incorrect.",
-      });
-
-      return false;
+      setErrors({ general: 'Identifiant ou mot de passe incorrect.' })
+      return false
     }
 
     if (email.length > 254) {
-      setErrors({
-        general: "Identifiant ou mot de passe incorrect.",
-      });
-
-      return false;
+      setErrors({ general: 'Identifiant ou mot de passe incorrect.' })
+      return false
     }
 
     if (/\s/.test(email)) {
-      setErrors({
-        general: "Identifiant ou mot de passe incorrect.",
-      });
-
-      return false;
+      setErrors({ general: 'Identifiant ou mot de passe incorrect.' })
+      return false
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
     if (!emailRegex.test(email)) {
-      setErrors({
-        general: "Identifiant ou mot de passe incorrect.",
-      });
-
-      return false;
+      setErrors({ general: 'Identifiant ou mot de passe incorrect.' })
+      return false
     }
 
-    return true;
-  };
+    return true
+  }
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
+    event.preventDefault()
 
-    setErrors({ general: "" });
+    setErrors({ general: '' })
 
     if (!validateForm()) {
-      return;
+      return
     }
 
-    setIsSubmitting(true);
+    setIsSubmitting(true)
 
     try {
-      const email = formData.email.trim();
-
-      await login(email, formData.password);
-
-      navigate("/dashboard", { replace: true });
+      const email = formData.email.trim()
+      await login(email, formData.password)
+      navigate('/dashboard', { replace: true })
     } catch (error) {
-      const status = error?.response?.status;
+      const status = error?.response?.status
 
       if (status === 401 || status === 422) {
-        setErrors({
-          general: "Identifiant ou mot de passe incorrect.",
-        });
+        setErrors({ general: 'Identifiant ou mot de passe incorrect.' })
 
-        // On garde l'email et on vide uniquement le mot de passe
+       
         setFormData((previous) => ({
           ...previous,
-          password: "",
-        }));
+          password: '',
+        }))
       } else {
-        setErrors({
-          general: "Une erreur est survenue. Veuillez réessayer.",
-        });
+        setErrors({ general: 'Une erreur est survenue. Veuillez réessayer.' })
       }
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
+
+  const features = [
+    'Suivi des présences en temps réel',
+    'Données centralisées & sécurisées',
+    'Fonctionnement adapté aux organisations',
+    'Rapports & statistiques automatisés',
+    "Gestion d'établissement",
+  ]
 
   return (
-    <main className="login-page">
+    <main className="flex min-h-screen font-sans bg-white">
+
       {/* =========================
           PARTIE GAUCHE
       ========================== */}
-      <section className="login-brand">
-        <div className="brand-content">
-          <img src={logo} alt="LANDELA Technologies" className="brand-logo" />
+      <section className="hidden md:flex flex-1 items-center justify-center bg-navy text-white p-12">
+        <div className="max-w-[400px] w-full">
 
-          <h1>
-            La présence,
-            <span> simplement.</span>
+          <img
+            src={logo}
+            alt="LANDELA Technologies"
+            className="max-w-[200px] h-auto block mb-10"
+          />
+
+          <h1 className="font-display text-[2.4rem] font-light leading-tight mb-4 text-white">
+            La présence, simplement.
           </h1>
 
-          <p className="brand-description">
-            Une gestion intelligente et centralisée de la présence pour les
-            établissements et organisations.
+          <p className="text-white/70 leading-relaxed mb-10">
+            Une gestion intelligente et centralisée de la présence
+            pour les établissements et organisations.
           </p>
 
-          <div className="brand-features-carousel">
-            <div className="carousel-track">
-              {[
-                "Suivi des présences en temps réel",
-                "Données centralisées & sécurisées",
-                "Fonctionnement adapté aux organisations",
-                "Rapports & statistiques automatisés",
-                "Gestion d'établissement",
-
-                "Suivi des présences en temps réel",
-                "Données centralisées & sécurisées",
-                "Fonctionnement adapté aux organisations",
-                "Rapports & statistiques automatisés",
-                "Gestion d'établissement",
-              ].map((feature, index) => (
-                <div key={`${feature}-${index}`} className="feature-item">
-                  <span className="feature-check">✓</span>
-
+          <div
+            className="group h-[130px] overflow-hidden relative
+              [mask-image:linear-gradient(to_bottom,transparent_0%,black_15%,black_85%,transparent_100%)]
+              [-webkit-mask-image:linear-gradient(to_bottom,transparent_0%,black_15%,black_85%,transparent_100%)]"
+          >
+            <div className="flex flex-col gap-3.5 animate-scroll-vertical motion-reduce:animate-none group-hover:[animation-play-state:paused]">
+              {[...features, ...features].map((feature, index) => (
+                <div
+                  key={`${feature}-${index}`}
+                  className="flex items-center gap-3 text-[0.9rem] text-white/70"
+                >
+                  <span className="text-white/40" aria-hidden="true">—</span>
                   <span>{feature}</span>
                 </div>
               ))}
@@ -166,26 +155,33 @@ function Login() {
       {/* =========================
           PARTIE DROITE
       ========================== */}
-      <section className="login-panel">
-        <div className="neumorphic-card">
+      <section className="flex-1 flex items-center justify-center p-8 bg-panel">
+
+        <div className="w-full max-w-[380px] bg-[radial-gradient(circle_at_top_left,rgba(11,43,74,0.035),transparent_55%)] bg-white rounded-2xl px-9 py-11 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_12px_32px_rgba(15,23,42,0.06)] flex flex-col items-center text-center">
+
           {/* Logo */}
-          <div className="neumorphic-logo-container">
-            <img src={logo} alt="LANDELA" className="neumorphic-logo" />
-          </div>
+          <img
+            src={logo}
+            alt="LANDELA"
+            className="w-14 h-14 object-contain mb-6"
+          />
 
           {/* Header */}
-          <div className="login-header">
-            <p className="eyebrow">ESPACE DE TRAVAIL</p>
+          <div className="mb-8">
+            <h2 className="font-display text-2xl font-medium text-slate-900 mb-1.5">
+              Bienvenue
+            </h2>
 
-            <h2>Bienvenue</h2>
-
-            <p>Connectez-vous à votre compte LANDELA.</p>
+            <p className="text-slate-500 text-sm">
+              Connectez-vous à votre compte LANDELA.
+            </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="neumorphic-form" noValidate>
+          <form onSubmit={handleSubmit} className="w-full" noValidate>
+
             {/* EMAIL */}
-            <div className="form-group">
-              <div className="input-wrapper">
+            <div className="mb-4 text-left">
+              <div className="flex items-center bg-panel rounded-lg px-4 transition-colors focus-within:bg-white focus-within:ring-2 focus-within:ring-navy-light/30">
                 <input
                   id="email"
                   name="email"
@@ -198,54 +194,59 @@ function Login() {
                   inputMode="email"
                   aria-label="Adresse email"
                   aria-invalid={Boolean(errors.general)}
+                  className="w-full py-3 border-none bg-transparent outline-none text-[0.9rem] text-slate-800 placeholder:text-slate-400
+                    min-w-0
+                    [&:-webkit-autofill]:[-webkit-text-fill-color:#1e293b]
+                    [&:-webkit-autofill]:[transition:background-color_5000s_ease-in-out_0s]"
                 />
               </div>
             </div>
 
             {/* MOT DE PASSE */}
-            <div className="form-group">
-              <div className="input-wrapper">
+            <div className="mb-4 text-left">
+              <div className="flex items-center bg-panel rounded-lg px-4 transition-colors focus-within:bg-white focus-within:ring-2 focus-within:ring-navy-light/30">
                 <input
                   id="password"
                   name="password"
-                  type={showPassword ? "text" : "password"}
+                  type={showPassword ? 'text' : 'password'}
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="Entrez votre mot de passe"
                   autoComplete="current-password"
                   aria-label="Mot de passe"
                   aria-invalid={Boolean(errors.general)}
+                  className="w-full py-3 border-none bg-transparent outline-none text-[0.9rem] text-slate-800 placeholder:text-slate-400 min-w-0"
                 />
 
                 <button
                   type="button"
-                  className="password-toggle"
                   onClick={() => setShowPassword((value) => !value)}
-                  aria-label={
-                    showPassword
-                      ? "Masquer le mot de passe"
-                      : "Afficher le mot de passe"
-                  }
+                  aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+                  className="bg-transparent border-none text-navy text-xs font-medium cursor-pointer pl-2 shrink-0"
                 >
-                  {showPassword ? "Masquer" : "Afficher"}
+                  {showPassword ? 'Masquer' : 'Afficher'}
                 </button>
               </div>
             </div>
 
             {/* MOT DE PASSE OUBLIÉ */}
-            <div className="forgot-password-container">
-              <Link to="/forgot-password" className="forgot-password">
+            <div className="w-full flex justify-end mb-5">
+              <Link
+                to="/forgot-password"
+                className="text-slate-500 text-[0.78rem] font-medium no-underline hover:text-navy transition-colors"
+              >
                 Mot de passe oublié ?
               </Link>
             </div>
 
             {/* MESSAGE GLOBAL */}
             {errors.general && (
-              <div className="general-error" role="alert" aria-live="polite">
-                <span className="error-icon" aria-hidden="true">
-                  !
-                </span>
-
+              <div
+                role="alert"
+                aria-live="polite"
+                className="w-full flex items-center gap-2.5 mb-4 px-4 py-3 rounded-lg bg-red-50 text-red-700 text-[0.82rem] font-medium text-left"
+              >
+                <span aria-hidden="true">⚠</span>
                 <span>{errors.general}</span>
               </div>
             )}
@@ -253,27 +254,31 @@ function Login() {
             {/* BOUTON */}
             <button
               type="submit"
-              className="login-button"
               disabled={isSubmitting}
+              className="w-full py-3 rounded-lg bg-navy text-white text-[0.95rem] font-medium cursor-pointer transition-colors hover:enabled:bg-navy-dark active:enabled:bg-navy-dark disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
                 <>
-                  <span className="spinner" />
+                  <span className="inline-block w-[18px] h-[18px] border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   Connexion...
                 </>
               ) : (
-                "Se connecter"
+                'Se connecter'
               )}
             </button>
+
           </form>
 
-          <p className="login-footer">
+          <p className="text-center mt-9 text-xs text-slate-400">
             LANDELA · Gestion intelligente de la présence
           </p>
+
         </div>
+
       </section>
+
     </main>
-  );
+  )
 }
 
-export default Login;
+export default Login
