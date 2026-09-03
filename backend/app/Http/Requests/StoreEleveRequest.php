@@ -15,6 +15,12 @@ class StoreEleveRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'matricule' => [
+                'nullable',
+                'string',
+                'max:50',
+                Rule::unique('eleves', 'matricule'),
+            ],
             'nom' => [
                 'required',
                 'string',
@@ -62,6 +68,9 @@ class StoreEleveRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'matricule.string' => 'Le matricule doit être une chaîne de caractères.',
+            'matricule.max' => 'Le matricule ne peut pas dépasser 50 caractères.',
+            'matricule.unique' => 'Ce matricule est déjà utilisé par un autre élève.',
             'nom.required' => 'Le nom est obligatoire.',
             'nom.string' => 'Le nom doit être une chaîne de caractères.',
             'nom.max' => 'Le nom ne peut pas dépasser 255 caractères.',
@@ -94,6 +103,7 @@ class StoreEleveRequest extends FormRequest
     public function attributes(): array
     {
         return [
+            'matricule' => 'matricule',
             'nom' => 'nom',
             'postnom' => 'postnom',
             'prenom' => 'prénom',
