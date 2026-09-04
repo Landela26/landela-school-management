@@ -1,3 +1,29 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500&display=swap');
+
+@theme {
+  --color-navy: #0b2b4a;
+  --color-navy-dark: #082038;
+  --color-navy-light: #1a4b6d;
+  --color-accent: #a8d5ff;
+
+  --color-panel: #f4f6f8;
+  --color-border: #dde3ea;
+
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+
+  --animate-scroll-vertical: scrollVertical 12s linear infinite;
+}
+
+@keyframes scrollVertical {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
 * {
   box-sizing: border-box;
 }
