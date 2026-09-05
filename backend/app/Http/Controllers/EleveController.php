@@ -215,4 +215,19 @@ class EleveController extends Controller
             'data' => $eleve_updated,
         ], 200);
     }
+    public function show(string $id): JsonResponse
+    {
+        $eleve = Eleve::find($id);
+        if (!$eleve) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Élève non trouvé.',
+            ], 404);
+        }
+        return response()->json([
+            'success' => true,
+            'message' => 'Élève récupéré avec succès.',
+            'data' => $eleve,
+        ], 200);
+    }
 }

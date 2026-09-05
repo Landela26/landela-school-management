@@ -22,4 +22,5 @@ Route::middleware([StartSession::class])->group(function () {
     Route::middleware('auth:sanctum')->get("/students", [EleveController::class, 'index']);
     Route::middleware('auth:sanctum')->post("/students", [EleveController::class, 'store']);
     Route::middleware('auth:sanctum')->put("/students/{id}", [EleveController::class, 'update']);
+    Route::middleware('auth:sanctum')->get("/students/{id}", [EleveController::class, 'show']);
 });
