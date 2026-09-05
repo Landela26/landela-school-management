@@ -23,7 +23,7 @@ export async function getDashboardMock() {
   return MOCK_DASHBOARD
 }
 
-export async function getDashboard() {
+ export async function getDashboard() {
   const response = await api.get('/dashboard')
   return response.data
 }
