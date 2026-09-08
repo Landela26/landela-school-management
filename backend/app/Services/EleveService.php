@@ -62,13 +62,13 @@ class EleveService
                 $eleve->photo = $photo;
             }
 
-            $eleve->nom = $donnees['nom'];
-            $eleve->postnom = $donnees['postnom'];
-            $eleve->prenom = $donnees['prenom'];
-            $eleve->sexe = $donnees['sexe'];
-            $eleve->date_naissance = $donnees['dateNaissance'];
-            $eleve->adresse = $donnees['adresse'];
-            $eleve->matricule = $donnees['matricule'];
+            $eleve->nom = $donnees['nom'] ?? $eleve->nom;
+            $eleve->postnom = $donnees['postnom'] ?? $eleve->postnom;
+            $eleve->prenom = $donnees['prenom'] ?? $eleve->prenom;
+            $eleve->sexe = $donnees['sexe'] ?? $eleve->sexe;
+            $eleve->date_naissance = $donnees['dateNaissance'] ??  $eleve->date_naissance;
+            $eleve->adresse = $donnees['adresse'] ?? $eleve->adresse;
+            $eleve->matricule = $donnees['matricule'] ?? $eleve->matricule;
 
             $eleve->save();
 
