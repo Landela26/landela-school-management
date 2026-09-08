@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { useAuth } from "./context/useAuth";
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
+import CreateStudent from './pages/CreateStudent'
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth()
@@ -39,6 +40,14 @@ function App() {
         element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/students/create"
+        element={
+          <ProtectedRoute>
+            <CreateStudent />
           </ProtectedRoute>
         }
       />
