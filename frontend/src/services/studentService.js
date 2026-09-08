@@ -1,6 +1,17 @@
 import api from './api';
 
 /**
+ * Récupère la liste paginée des élèves.
+ *
+ * @param {Object} params - Paramètres de requête (page, per_page, nom, sexe, statut, …).
+ * @returns {Promise<Object>} { success, message, data: [...], pagination: {...} }
+ */
+export async function getStudents(params = {}) {
+  const response = await api.get('/students', { params });
+  return response.data;
+}
+
+/**
  * Crée un nouvel élève.
  *
  * @param {FormData} formData - Données du formulaire (multipart pour la photo).

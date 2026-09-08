@@ -132,7 +132,7 @@ function Dashboard() {
     {
       label: 'Élèves',
       icon: Users,
-      to: '/students/create',
+      to: '/students',
     },
     {
       label: 'Présences',
