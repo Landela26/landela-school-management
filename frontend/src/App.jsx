@@ -3,6 +3,7 @@ import { useAuth } from "./context/useAuth";
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import CreateStudent from './pages/CreateStudent'
+import EditStudent from './pages/EditStudent'
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth()
@@ -48,6 +49,14 @@ function App() {
         element={
           <ProtectedRoute>
             <CreateStudent />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/students/:id/edit"
+        element={
+          <ProtectedRoute>
+            <EditStudent />
           </ProtectedRoute>
         }
       />
