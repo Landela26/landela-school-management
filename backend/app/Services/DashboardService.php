@@ -29,15 +29,29 @@ class DashboardService
     {
         $aujourdHui = now()->toDateString();
 
+        // Nombre total d'élèves
+        $totalEleves = Eleve::count();
+
+        // Nombre d'élèves actifs
+        $elevesActifs = Eleve::where('statut', 'actif')->count();
+
+        // Nombre d'élèves présents aujourd'hui
+        $elevesPresents = Presence::whereDate(
+            'date_heure',
+            $aujourdHui
+        )
+            ->where('statut_presence', 'present')
+            ->count();
+
+        // Taux d'assiduité
+        $tauxAssiduite = $elevesActifs > 0
+            ? round(($elevesPresents / $elevesActifs) * 100)
+            : 0;
+
         return [
-            'total_eleves' => Eleve::where('statut', 'actif')->count(),
-
-            'total_personnel' => Personnel::where('statut', 'actif')->count(),
-
-            'total_presences' => Presence::whereDate(
-                'date_heure',
-                $aujourdHui
-            )->count(),
+            'total_eleves' => $totalEleves,
+            'eleves_actifs' => $elevesActifs,
+            'taux_assiduite' => $tauxAssiduite,
         ];
     }
 
