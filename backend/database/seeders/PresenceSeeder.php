@@ -12,10 +12,12 @@ class PresenceSeeder extends Seeder
     {
         DB::statement('SET FOREIGN_KEY_CHECKS=0');
 
-        DB::table('presences')->truncate();
+
 
         $today = Carbon::today();
-
+        DB::table('presences')
+            ->whereDate('date_heure', $today)
+            ->delete();
         $attributions = DB::table('attribution_cartes')
             ->where('statut', 'actif')
             ->get()
