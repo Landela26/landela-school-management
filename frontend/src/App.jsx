@@ -1,7 +1,8 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
-import { useAuth } from "./context/useAuth";
+import { useAuth } from './context/useAuth'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
+import DashboardLayout from './components/layout/DashboardLayout'
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth()
@@ -34,24 +35,23 @@ function App() {
     <Routes>
       <Route path="/login" element={<Login />} />
 
+
       <Route
-        path="/dashboard"
         element={
           <ProtectedRoute>
-            <Dashboard />
+            <DashboardLayout />
           </ProtectedRoute>
         }
-      />
+      >
+        <Route path="/dashboard" element={<Dashboard />} />
+        {/* <Route path="/eleves" element={<Students />} /> */}
+        {/* <Route path="/classes" element={<Classes />} /> */}
+        {/* <Route path="/presences" element={<Attendances />} /> */}
+        {/* <Route path="/personnel" element={<Staff />} /> */}
+      </Route>
 
-      <Route
-        path="/"
-        element={<Navigate to="/dashboard" replace />}
-      />
-
-      <Route
-        path="*"
-        element={<Navigate to="/dashboard" replace />}
-      />
+      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   )
 }
