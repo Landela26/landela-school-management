@@ -5,6 +5,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -27,6 +28,25 @@ return Application::configure(basePath: dirname(__DIR__))
             fn(Request $request) => $request->is('api/*'),
         );
 
+        /*
+         * Erreurs de validation
+         */
+        $exceptions->render(function (
+            ValidationException $exception,
+            Request $request
+        ) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Les données fournies sont invalides.',
+                    'errors' => $exception->errors(),
+                ], 422);
+            }
+        });
+
+        /*
+         * Utilisateur non authentifié
+         */
         $exceptions->render(function (
             AuthenticationException $exception,
             Request $request
