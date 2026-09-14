@@ -8,10 +8,10 @@ import {
   X,
 } from 'lucide-react'
 
-const labelClass = 'mb-1.5 block text-sm font-medium text-slate-700'
+const labelClass = 'mb-2 block text-sm font-medium text-slate-700'
 
 function inputClass(invalid) {
-  return `w-full rounded-md border bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 ${
+  return `w-full rounded-md border bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 ${
     invalid
       ? 'border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-100'
       : 'border-slate-200 focus:border-navy focus:ring-2 focus:ring-navy/10'
@@ -71,11 +71,11 @@ export default function StudentForm({
         )}
 
         {/* Informations personnelles */}
-        <section className="p-5 md:p-6">
-          <h2 className="text-[15px] font-semibold text-slate-900">Informations personnelles</h2>
-          <p className="mt-1 text-sm text-slate-500">Renseignez les informations d’identité de l’élève.</p>
+        <section className="p-6 md:p-8">
+          <h2 className="text-base font-semibold text-slate-900">Informations personnelles</h2>
+          <p className="mt-1.5 text-sm text-slate-500">Renseignez les informations d’identité de l’élève.</p>
 
-          <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2">
             <div>
               <label htmlFor="nom" className={labelClass}>Nom <Required /></label>
               <input id="nom" name="nom" type="text" value={form.nom} onChange={onChange}
@@ -130,11 +130,11 @@ export default function StudentForm({
         </section>
 
         {/* Coordonnées */}
-        <section className="border-t border-slate-200 p-5 md:p-6">
-          <h2 className="text-[15px] font-semibold text-slate-900">Coordonnées</h2>
-          <p className="mt-1 text-sm text-slate-500">Indiquez l’adresse de résidence de l’élève.</p>
+        <section className="border-t border-slate-200 p-6 md:p-8">
+          <h2 className="text-base font-semibold text-slate-900">Coordonnées</h2>
+          <p className="mt-1.5 text-sm text-slate-500">Indiquez l’adresse de résidence de l’élève.</p>
 
-          <div className="mt-5">
+          <div className="mt-6">
             <label htmlFor="adresse" className={labelClass}>Adresse <Required /></label>
             <div className="relative">
               <MapPin size={18} className="pointer-events-none absolute left-3.5 top-3 text-slate-400" />
@@ -147,12 +147,12 @@ export default function StudentForm({
         </section>
 
         {/* Photo */}
-        <section className="border-t border-slate-200 p-5 md:p-6">
-          <h2 className="text-[15px] font-semibold text-slate-900">Photo</h2>
-          <p className="mt-1 text-sm text-slate-500">Ajoutez une photo de l’élève si nécessaire.</p>
+        <section className="border-t border-slate-200 p-6 md:p-8">
+          <h2 className="text-base font-semibold text-slate-900">Photo</h2>
+          <p className="mt-1.5 text-sm text-slate-500">Ajoutez une photo de l’élève si nécessaire.</p>
 
           <label htmlFor="photo"
-            className={`mt-5 flex cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed p-7 text-center transition ${
+            className={`mt-6 flex cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed p-8 text-center transition ${
               fieldErrors.photo ? 'border-rose-300 bg-rose-50' : 'border-slate-200 hover:border-navy hover:bg-slate-50'
             }`}>
             <div className="flex h-11 w-11 items-center justify-center rounded-md border border-slate-200 bg-white text-navy">
@@ -169,7 +169,7 @@ export default function StudentForm({
         </section>
 
         {/* Actions */}
-        <div className="flex flex-col-reverse gap-3 border-t border-slate-200 bg-slate-50 p-4 sm:flex-row sm:justify-end md:px-6">
+        <div className="flex flex-col-reverse gap-3 border-t border-slate-200 bg-slate-50 p-5 sm:flex-row sm:justify-end md:px-8">
           <button type="button" onClick={onCancel} disabled={loading}
             className="inline-flex items-center justify-center rounded-md border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 disabled:opacity-50">
             Annuler
