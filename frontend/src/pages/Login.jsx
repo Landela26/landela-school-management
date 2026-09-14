@@ -177,8 +177,6 @@ function Login() {
           <div className="login-header">
             <p className="eyebrow">ESPACE DE TRAVAIL</p>
 
-            <h2>Bienvenue</h2>
-
             <p>Connectez-vous à votre compte LANDELA.</p>
           </div>
 
