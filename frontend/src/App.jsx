@@ -2,6 +2,9 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { useAuth } from './context/useAuth'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
+import StudentsList from './pages/StudentsList'
+import CreateStudent from './pages/CreateStudent'
+import EditStudent from './pages/EditStudent'
 import DashboardLayout from './components/layout/DashboardLayout'
 
 function ProtectedRoute({ children }) {
@@ -44,7 +47,9 @@ function App() {
         }
       >
         <Route path="/dashboard" element={<Dashboard />} />
-        {/* <Route path="/eleves" element={<Students />} /> */}
+        <Route path="/eleves" element={<StudentsList />} />
+        <Route path="/eleves/nouveau" element={<CreateStudent />} />
+        <Route path="/eleves/:id/modifier" element={<EditStudent />} />
         {/* <Route path="/classes" element={<Classes />} /> */}
         {/* <Route path="/presences" element={<Attendances />} /> */}
         {/* <Route path="/personnel" element={<Staff />} /> */}
