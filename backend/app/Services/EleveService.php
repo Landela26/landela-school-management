@@ -5,19 +5,11 @@ namespace App\Services;
 use App\Models\Eleve;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 class EleveService
 {
     /**
      * Créer un nouvel élève.
-     *
-     * Les données système sont générées ici :
-     * - statut
-     * - date_creation
-     *
-     * Le matricule sera géré ultérieurement
-     * selon la configuration choisie par l'établissement.
      */
     public function creer(array $donnees): Eleve
     {
@@ -52,5 +44,35 @@ class EleveService
     private function stockerPhoto(UploadedFile $photo): string
     {
         return $photo->store('eleves', 'public');
+    }
+
+
+    /**
+     * modifier un élève existant.
+     * 
+     */
+    public function modifier(Eleve $eleve, array $donnees): Eleve
+    {
+        return DB::transaction(function () use ($eleve, $donnees) {
+            if (
+                isset($donnees['photo']) &&
+                $donnees['photo'] instanceof UploadedFile
+            ) {
+                $photo = $this->stockerPhoto($donnees['photo']);
+                $eleve->photo = $photo;
+            }
+
+            $eleve->nom = $donnees['nom'] ?? $eleve->nom;
+            $eleve->postnom = $donnees['postnom'] ?? $eleve->postnom;
+            $eleve->prenom = $donnees['prenom'] ?? $eleve->prenom;
+            $eleve->sexe = $donnees['sexe'] ?? $eleve->sexe;
+            $eleve->date_naissance = $donnees['dateNaissance'] ?? $eleve->date_naissance;
+            $eleve->adresse = $donnees['adresse'] ?? $eleve->adresse;
+            $eleve->matricule = $donnees['matricule'] ?? $eleve->matricule;
+
+            $eleve->save();
+
+            return $eleve;
+        });
     }
 }
