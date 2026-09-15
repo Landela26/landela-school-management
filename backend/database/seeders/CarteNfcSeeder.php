@@ -14,50 +14,27 @@ class CarteNfcSeeder extends Seeder
         DB::table('cartes_nfc')->delete();
 
         $now = Carbon::now();
+        $cartes = [];
 
-        DB::table('cartes_nfc')->insert([
-            [
-                'id' => 1,
+        $eleves = DB::table('eleves')
+            ->where('statut', 'actif')
+            ->orderBy('id_eleve')
+            ->get();
+
+        foreach ($eleves as $index => $eleve) {
+            $numero = $index + 1;
+
+            $cartes[] = [
+                'id' => $numero,
                 'uid' => Str::uuid()->toString(),
-                'numero_carte' => 'NFC-000001',
+                'numero_carte' => 'NFC-' . str_pad($numero, 6, '0', STR_PAD_LEFT),
                 'statut' => 'actif',
                 'date_creation' => $now,
-            ],
-            [
-                'id' => 2,
-                'uid' => Str::uuid()->toString(),
-                'numero_carte' => 'NFC-000002',
-                'statut' => 'actif',
-                'date_creation' => $now,
-            ],
-            [
-                'id' => 3,
-                'uid' => Str::uuid()->toString(),
-                'numero_carte' => 'NFC-000003',
-                'statut' => 'actif',
-                'date_creation' => $now,
-            ],
-            [
-                'id' => 4,
-                'uid' => Str::uuid()->toString(),
-                'numero_carte' => 'NFC-000004',
-                'statut' => 'actif',
-                'date_creation' => $now,
-            ],
-            [
-                'id' => 5,
-                'uid' => Str::uuid()->toString(),
-                'numero_carte' => 'NFC-000005',
-                'statut' => 'actif',
-                'date_creation' => $now,
-            ],
-            [
-                'id' => 6,
-                'uid' => Str::uuid()->toString(),
-                'numero_carte' => 'NFC-000006',
-                'statut' => 'actif',
-                'date_creation' => $now,
-            ],
-        ]);
+            ];
+        }
+
+        if (!empty($cartes)) {
+            DB::table('cartes_nfc')->insert($cartes);
+        }
     }
 }
