@@ -39,7 +39,7 @@ class EleveController extends Controller
          * trim() permet notamment d'éviter qu'une valeur composée
          * uniquement d'espaces soit considérée comme une recherche.
          */
-        $nom = trim((string) $request->input('nom', ''));
+        $recherche = trim((string) $request->input('search', $request->input('nom', '')));
         $postnom = trim((string) $request->input('postnom', ''));
         $prenom = trim((string) $request->input('prenom', ''));
         $matricule = trim((string) $request->input('matricule', ''));
@@ -51,8 +51,22 @@ class EleveController extends Controller
         /*
          * Filtres textuels.
          */
-        if ($nom !== '') {
-            $query->where('nom', 'like', "%{$nom}%");
+        if ($recherche !== '') {
+            $termes = preg_split('/\s+/', $recherche, -1, PREG_SPLIT_NO_EMPTY);
+
+            $query->where(function ($requete) use ($termes) {
+                foreach ($termes as $terme) {
+                    $requete->where(function ($sousRequete) use ($terme) {
+                        $valeur = "%{$terme}%";
+
+                        $sousRequete
+                            ->where('nom', 'like', $valeur)
+                            ->orWhere('postnom', 'like', $valeur)
+                            ->orWhere('prenom', 'like', $valeur)
+                            ->orWhere('matricule', 'like', $valeur);
+                    });
+                }
+            });
         }
 
         if ($postnom !== '') {
