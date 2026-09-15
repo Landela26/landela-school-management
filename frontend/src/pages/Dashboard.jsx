@@ -62,18 +62,25 @@ export default function Dashboard() {
     return cleanup;
   }, [fetchDashboardData]);
 
-  const pointageParClasse = data?.pointage_par_classe ?? [];
-
   const filteredClasses = useMemo(() => {
+    const pointageParClasse = data?.pointage_par_classe ?? [];
+
     return pointageParClasse
-      .map((row) => {
+      .map((row, index) => {
+        const nomClasse = row.nom_classe ?? row.classe ?? "Classe sans nom";
         const total = row.total_eleves || 0;
-        const pointes = row.pointes || 0;
+        const pointes = row.pointes ?? row.eleves_pointes ?? 0;
         const ratio = total > 0 ? Math.round((pointes / total) * 100) : 0;
-        return { ...row, ratio };
+        return {
+          ...row,
+          classeKey: row.id_classe ?? `${nomClasse}-${index}`,
+          nom_classe: nomClasse,
+          pointes,
+          ratio,
+        };
       })
       .filter((row) => {
-        const matchesSearch = row.classe
+        const matchesSearch = row.nom_classe
           .toLowerCase()
           .includes(searchQuery.toLowerCase());
         if (!matchesSearch) return false;
@@ -85,9 +92,9 @@ export default function Dashboard() {
         return true;
       })
       .sort((a, b) =>
-        a.classe.localeCompare(b.classe, "fr", { numeric: true }),
+        a.nom_classe.localeCompare(b.nom_classe, "fr", { numeric: true }),
       );
-  }, [pointageParClasse, searchQuery, statusFilter]);
+  }, [data?.pointage_par_classe, searchQuery, statusFilter]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -271,14 +278,14 @@ export default function Dashboard() {
                   <tbody className="divide-y divide-slate-100">
                     {paginatedClasses.map((row) => (
                       <tr
-                        key={row.classe}
+                        key={row.classeKey}
                         onClick={() => handleClasseClick(row)}
                         className="cursor-pointer transition-colors hover:bg-indigo-50/40 active:bg-indigo-50/80"
                       >
                         <td className="px-8 py-6 font-bold text-slate-900 text-lg">
                           <span className="inline-flex items-center gap-3">
                             <span className="h-2.5 w-2.5 rounded-full bg-indigo-500" />
-                            {row.classe}
+                            {row.nom_classe}
                           </span>
                         </td>
                         <td className="px-8 py-6 text-slate-700 font-medium tabular-nums text-base">
@@ -314,13 +321,13 @@ export default function Dashboard() {
               <div className="grid grid-cols-1 divide-y divide-slate-100 md:hidden">
                 {paginatedClasses.map((row) => (
                   <div
-                    key={row.classe}
+                    key={row.classeKey}
                     onClick={() => handleClasseClick(row)}
                     className="p-6 space-y-4 cursor-pointer active:bg-indigo-50/50"
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-slate-900 text-lg">
-                        Classe {row.classe}
+                        Classe {row.nom_classe}
                       </span>
                       <StatusBadge ratio={row.ratio} />
                     </div>
