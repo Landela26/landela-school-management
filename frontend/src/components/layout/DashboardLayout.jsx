@@ -3,9 +3,9 @@ import Sidebar from "./Sidebar";
 
 function DashboardLayout() {
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-slate-50">
+    <div className="flex h-screen w-full overflow-hidden bg-slate-50">
       <Sidebar />
-      <main className="flex-1 min-w-0 h-full overflow-y-auto  border border-slate-200 bg-white !p-2 shadow-sm">
+      <main className="relative flex-1 min-w-0 h-full overflow-y-auto border border-slate-200 bg-white !p-2 shadow-sm">
         <Outlet />
       </main>
     </div>
