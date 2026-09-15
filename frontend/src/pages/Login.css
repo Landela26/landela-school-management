@@ -20,11 +20,13 @@
   --radius-input: 8px;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/*
+ * Reset universel `* { margin:0; padding:0; box-sizing:border-box }` retiré :
+ * non-layered, il écrasait TOUS les utilitaires Tailwind (mx-auto, m-*, p-*)
+ * de l'app -> contenu non centré et collé aux bords. box-sizing + reset des
+ * marges sont déjà assurés (de façon surchargeable) par le Preflight Tailwind.
+ * Les règles ci-dessous restent limitées aux classes de la page de connexion.
+ */
 
 .login-page {
   display: flex;
