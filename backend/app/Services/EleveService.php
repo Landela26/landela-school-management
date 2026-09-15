@@ -66,7 +66,7 @@ class EleveService
             $eleve->postnom = $donnees['postnom'] ?? $eleve->postnom;
             $eleve->prenom = $donnees['prenom'] ?? $eleve->prenom;
             $eleve->sexe = $donnees['sexe'] ?? $eleve->sexe;
-            $eleve->date_naissance = $donnees['dateNaissance'] ??  $eleve->date_naissance;
+            $eleve->date_naissance = $donnees['dateNaissance'] ?? $eleve->date_naissance;
             $eleve->adresse = $donnees['adresse'] ?? $eleve->adresse;
             $eleve->matricule = $donnees['matricule'] ?? $eleve->matricule;
 
