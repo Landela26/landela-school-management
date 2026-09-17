@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
-import { AlertCircle, ChevronLeft, ChevronRight, ClipboardCheck, Cpu, Hand, X } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { AlertCircle, ChevronLeft, ChevronRight, ClipboardCheck, Cpu, Hand, Plus, X } from 'lucide-react'
 
 import { getAttendances } from '../services/attendanceService'
 import { getClasses } from '../services/classeService'
@@ -61,6 +62,7 @@ function SkeletonRows() {
 }
 
 export default function PresencesList() {
+  const navigate = useNavigate()
   const [rows, setRows] = useState([])
   const [pagination, setPagination] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -114,9 +116,15 @@ export default function PresencesList() {
   return (
     <div className="mx-auto max-w-6xl p-6 md:p-8">
       {/* En-tête */}
-      <div className="mb-6">
-        <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">Suivi des présences</p>
-        <h1 className="font-display text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">Historique des pointages</h1>
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">Suivi des présences</p>
+          <h1 className="font-display text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">Historique des pointages</h1>
+        </div>
+        <button type="button" onClick={() => navigate('/presences/pointage')}
+          className="inline-flex items-center justify-center gap-2 rounded-md bg-navy px-4 py-2.5 text-sm font-medium text-white transition hover:bg-navy-dark active:scale-[0.98]">
+          <Plus size={17} />Faire le pointage
+        </button>
       </div>
 
       {/* Filtres */}
