@@ -152,7 +152,7 @@ export default function StudentForm({
           <p className="mt-1.5 text-sm text-slate-500">Ajoutez une photo de l’élève si nécessaire.</p>
 
           <label htmlFor="photo"
-            className={`mt-6 flex cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed p-8 text-center transition ${
+            className={`relative mt-6 flex cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed p-8 text-center transition ${
               fieldErrors.photo ? 'border-rose-300 bg-rose-50' : 'border-slate-200 hover:border-navy hover:bg-slate-50'
             }`}>
             <div className="flex h-11 w-11 items-center justify-center rounded-md border border-slate-200 bg-white text-navy">
