@@ -1,13 +1,14 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 
 import { createStudent } from '../services/studentService'
+import { getClasses } from '../services/classeService'
 import StudentForm from '../components/forms/StudentForm'
 
 const emptyForm = {
   nom: '', postnom: '', prenom: '', matricule: '',
-  sexe: '', dateNaissance: '', adresse: '', photo: null,
+  sexe: '', dateNaissance: '', adresse: '', photo: null, classe_id: '',
 }
 
 export default function CreateStudent() {
@@ -18,6 +19,13 @@ export default function CreateStudent() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
+  const [classes, setClasses] = useState([])
+
+  useEffect(() => {
+    getClasses()
+      .then((res) => setClasses(res?.data || []))
+      .catch(() => setClasses([]))
+  }, [])
 
   const handleChange = (event) => {
     const { name, value, type, files } = event.target
@@ -53,6 +61,7 @@ export default function CreateStudent() {
       formData.append('sexe', form.sexe)
       formData.append('dateNaissance', form.dateNaissance)
       formData.append('adresse', form.adresse.trim())
+      if (form.classe_id) formData.append('classe_id', form.classe_id)
       if (form.photo) formData.append('photo', form.photo)
 
       const response = await createStudent(formData)
@@ -107,6 +116,7 @@ export default function CreateStudent() {
         onSubmit={handleSubmit}
         onCancel={handleCancel}
         onDismissSuccess={() => setSuccess('')}
+        classes={classes}
       />
     </div>
   )

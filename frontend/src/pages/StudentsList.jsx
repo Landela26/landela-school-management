@@ -95,6 +95,9 @@ function SkeletonRows() {
         <div className="h-5 w-20 animate-pulse rounded-md bg-slate-100" />
       </td>
       <td className="px-5 py-4">
+        <div className="h-3 w-16 animate-pulse rounded bg-slate-100" />
+      </td>
+      <td className="px-5 py-4">
         <div className="h-3 w-20 animate-pulse rounded bg-slate-100" />
       </td>
       <td className="px-5 py-4">
@@ -288,12 +291,13 @@ export default function StudentsList() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[720px] border-collapse text-left">
+            <table className="w-full min-w-[820px] border-collapse text-left">
               <thead>
                 <tr className="bg-slate-50 text-[11px] font-bold uppercase tracking-[0.06em] text-slate-500">
                   <th className="px-5 py-3.5">Élève</th>
                   <th className="px-5 py-3.5">Matricule</th>
                   <th className="px-5 py-3.5">Sexe</th>
+                  <th className="px-5 py-3.5">Classe</th>
                   <th className="px-5 py-3.5">Naissance</th>
                   <th className="px-5 py-3.5">Statut</th>
                   <th className="px-5 py-3.5 text-right">Actions</th>
@@ -328,6 +332,9 @@ export default function StudentsList() {
                       </td>
                       <td className="px-5 py-4">
                         <SexeBadge sexe={s.sexe} />
+                      </td>
+                      <td className="px-5 py-4 text-sm text-slate-600">
+                        {s.classe?.nom_classe || s.classe_nom || "—"}
                       </td>
                       <td className="px-5 py-4 text-sm tabular-nums text-slate-500">
                         {formatDate(s.date_naissance)}
