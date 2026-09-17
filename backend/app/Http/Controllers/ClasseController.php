@@ -73,4 +73,22 @@ class ClasseController extends Controller
             'data' => $classeModifiee,
         ]);
     }
+    public function destroy(int $id): JsonResponse
+    {
+        $classe = Classe::find($id);
+
+        if (!$classe) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Classe non trouvée.',
+            ], 404);
+        }
+
+        $classe->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Classe supprimée avec succès.',
+        ]);
+    }
 }
