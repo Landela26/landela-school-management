@@ -3,11 +3,12 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, Loader2 } from 'lucide-react'
 
 import { getStudent, updateStudent } from '../services/studentService'
+import { getClasses } from '../services/classeService'
 import StudentForm from '../components/forms/StudentForm'
 
 const emptyForm = {
   nom: '', postnom: '', prenom: '', matricule: '',
-  sexe: '', dateNaissance: '', adresse: '', photo: null,
+  sexe: '', dateNaissance: '', adresse: '', photo: null, classe_id: '',
 }
 
 export default function EditStudent() {
@@ -20,6 +21,13 @@ export default function EditStudent() {
   const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
   const [initialLoading, setInitialLoading] = useState(true)
+  const [classes, setClasses] = useState([])
+
+  useEffect(() => {
+    getClasses()
+      .then((res) => setClasses(res?.data || []))
+      .catch(() => setClasses([]))
+  }, [])
 
   useEffect(() => {
     const loadStudent = async () => {
@@ -39,6 +47,7 @@ export default function EditStudent() {
             ? new Date(student.date_naissance).toISOString().slice(0, 10) : '',
           adresse: student.adresse || '',
           photo: null,
+          classe_id: student.classe_id ? String(student.classe_id) : '',
         })
       } catch (err) {
         console.error('Erreur chargement élève :', err)
@@ -85,6 +94,7 @@ export default function EditStudent() {
       formData.append('sexe', form.sexe)
       formData.append('dateNaissance', form.dateNaissance)
       formData.append('adresse', form.adresse.trim())
+      if (form.classe_id) formData.append('classe_id', form.classe_id)
       if (form.photo) formData.append('photo', form.photo)
 
       const response = await updateStudent(id, formData)
@@ -149,6 +159,7 @@ export default function EditStudent() {
         onSubmit={handleSubmit}
         onCancel={handleCancel}
         onDismissSuccess={() => setSuccess('')}
+        classes={classes}
         successTitle="Élève mis à jour"
         errorTitle="Impossible de modifier l’élève"
         submitLabel="Enregistrer les modifications"
