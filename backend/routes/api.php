@@ -29,4 +29,5 @@ Route::middleware([StartSession::class])->group(function () {
     Route::middleware('auth:sanctum')->post('/classes', [ClasseController::class, 'store']);
     Route::middleware('auth:sanctum')->get('/classes', [ClasseController::class, 'index']);
     Route::middleware('auth:sanctum')->get('/classes/{id}', [ClasseController::class, 'show']);
+    Route::middleware('auth:sanctum')->put('/classes/{id}', [ClasseController::class, 'update']);
 });

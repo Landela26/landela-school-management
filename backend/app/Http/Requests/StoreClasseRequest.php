@@ -56,8 +56,8 @@ class StoreClasseRequest extends FormRequest
             'niveau.max' => 'Le niveau ne doit pas dépasser 50 caractères.',
             'annee_scolaire.required' => "L'année scolaire est requise.",
             'annee_scolaire.string' => "L'année scolaire doit être une chaîne de caractères.",
-            'annee_scolaire.size' => "L'année scolaire doit avoir exactement 9 caractères (format : YYYY-YYYY).",
-            'annee_scolaire.regex' => "L'année scolaire doit respecter le format : YYYY-YYYY.",
+            'annee_scolaire.size' => "L'année scolaire doit avoir exactement 9 caractères (format : AAAA-AAAA).",
+            'annee_scolaire.regex' => "L'année scolaire doit respecter le format : AAAA-AAAA.",
             'id_classe_parent.integer' => "L'identifiant de la classe parente doit être un entier.",
             'id_classe_parent.exists' => "L'identifiant de la classe parente n'existe pas dans la table des classes.",
         ];

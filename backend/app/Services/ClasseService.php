@@ -31,4 +31,14 @@ class ClasseService
             ]);
         });
     }
+
+    public function modifier(Classe $classe, array $donnees): Classe
+    {
+        return DB::transaction(function () use ($classe, $donnees) {
+            $classe->fill($donnees);
+            $classe->save();
+
+            return $classe->fresh();
+        });
+    }
 }

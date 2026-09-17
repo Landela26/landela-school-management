@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreClasseRequest;
+use App\Http\Requests\UpdateClasseRequest;
+use App\Models\Classe;
 use App\Services\ClasseService;
 use Illuminate\Http\JsonResponse;
 
@@ -47,5 +49,28 @@ class ClasseController extends Controller
             'message' => 'Classe créée avec succès.',
             'data' => $classe,
         ], 201);
+    }
+
+    public function update(UpdateClasseRequest $request, int $id): JsonResponse
+    {
+        $classe = Classe::find($id);
+
+        if (!$classe) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Classe non trouvée.',
+            ], 404);
+        }
+
+        $classeModifiee = $this->classeService->modifier(
+            $classe,
+            $request->validated()
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Classe modifiée avec succès.',
+            'data' => $classeModifiee,
+        ]);
     }
 }
