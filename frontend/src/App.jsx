@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard'
 import StudentsList from './pages/StudentsList'
 import CreateStudent from './pages/CreateStudent'
 import EditStudent from './pages/EditStudent'
+import ParametresPage from './pages/ParametresPage'
 import DashboardLayout from './components/layout/DashboardLayout'
 
 function ProtectedRoute({ children }) {
@@ -53,6 +54,7 @@ function App() {
         {/* <Route path="/classes" element={<Classes />} /> */}
         {/* <Route path="/presences" element={<Attendances />} /> */}
         {/* <Route path="/personnel" element={<Staff />} /> */}
+        <Route path="/parametres" element={<ParametresPage />} />
       </Route>
 
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
