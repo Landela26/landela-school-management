@@ -9,12 +9,12 @@ class ClasseService
 {
     public function  getliste(): array
     {
-        $classes = Classe::all();
+        $classes = Classe::with('enseignant')->get();
         return $classes->toArray();
     }
     public function getById(int $id): ?Classe
     {
-        return Classe::find($id);
+        return Classe::with('enseignant')->find($id);
     }
     public function creer(array $donnees): Classe
     {

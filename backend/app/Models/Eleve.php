@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -20,6 +21,7 @@ class Eleve extends Model
 
     protected $fillable = [
         'matricule',
+        'classe_id',
         'nom',
         'postnom',
         'prenom',
@@ -30,6 +32,15 @@ class Eleve extends Model
         'statut',
         'date_creation',
     ];
+
+    public function classe(): BelongsTo
+    {
+        return $this->belongsTo(
+            Classe::class,
+            'classe_id',
+            'id_classe'
+        );
+    }
 
     protected $casts = [
         'date_naissance' => 'date',
