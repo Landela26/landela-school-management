@@ -22,7 +22,8 @@ class StoreClasseRequest extends FormRequest
             'id_enseignant' => [
                 'required',
                 'integer',
-                Rule::exists('personnels', 'id_personnel'),
+                Rule::exists('personnels', 'id_personnel')
+                    ->where(fn($requete) => $requete->where('estEnseignant', true)),
             ],
             'nom_classe' => ['required', 'string', 'max:255'],
             'niveau' => ['required', 'string', 'max:50'],

@@ -12,7 +12,13 @@ class PersonnelController extends Controller
      */
     public function index()
     {
-        $personnels = Personnel::all();
+        $requete = Personnel::query();
+
+        if (request()->query('role') === 'enseignant') {
+            $requete->where('estEnseignant', true);
+        }
+
+        $personnels = $requete->get();
         return response()->json([
             'success' => true,
             'message' => 'Liste des personnels récupérée avec succès.',

@@ -25,7 +25,8 @@ class UpdateClasseRequest extends FormRequest
                 'sometimes',
                 'required',
                 'integer',
-                Rule::exists('personnels', 'id_personnel'),
+                Rule::exists('personnels', 'id_personnel')
+                    ->where(fn($requete) => $requete->where('estEnseignant', true)),
             ],
             'nom_classe' => ['sometimes', 'required', 'string', 'max:255'],
             'niveau' => ['sometimes', 'required', 'string', 'max:50'],
