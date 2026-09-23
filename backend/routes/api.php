@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\ClasseController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EleveController;
@@ -25,6 +26,12 @@ Route::middleware([StartSession::class])->group(function () {
     Route::middleware('auth:sanctum')->post("/students", [EleveController::class, 'store']);
     Route::middleware('auth:sanctum')->put("/students/{id}", [EleveController::class, 'update']);
     Route::middleware('auth:sanctum')->get("/students/{id}", [EleveController::class, 'show']);
+
+    //attendance routes
+    Route::middleware('auth:sanctum')->post('/attendances', [AttendanceController::class, 'enregistrerPointageManuel']);
+    Route::middleware('auth:sanctum')->get('/nfc/cards', [AttendanceController::class, 'listerCartesNfc']);
+    Route::middleware('auth:sanctum')->get('/nfc/cards/{uid}/verify', [AttendanceController::class, 'verifierCarteNfc']);
+    Route::middleware('auth:sanctum')->post('/nfc/scan', [AttendanceController::class, 'scannerBadgeNfc']);
 
     //classe route
     Route::middleware('auth:sanctum')->post('/classes', [ClasseController::class, 'store']);

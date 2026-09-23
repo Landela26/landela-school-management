@@ -62,6 +62,7 @@ class StoreEleveRequest extends FormRequest
                 'mimes:jpg,jpeg,png,webp',
                 'max:2048',
             ],
+
         ];
     }
 
