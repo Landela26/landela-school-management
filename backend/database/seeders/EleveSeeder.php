@@ -4,13 +4,14 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Carbon\Carbon;
 
 class EleveSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0');
+        Schema::disableForeignKeyConstraints();
 
         DB::table('eleves')->truncate();
 
@@ -20,6 +21,7 @@ class EleveSeeder extends Seeder
             [
                 'id_eleve' => 1,
                 'matricule' => 'ELV-0001',
+                'classe_id' => 1,
                 'nom' => 'Bondo',
                 'postnom' => 'Kisinza',
                 'prenom' => 'Josue',
@@ -33,6 +35,7 @@ class EleveSeeder extends Seeder
             [
                 'id_eleve' => 2,
                 'matricule' => 'ELV-0002',
+                'classe_id' => 1,
                 'nom' => 'Kabesele',
                 'postnom' => 'Mwamba',
                 'prenom' => 'Daniel',
@@ -46,6 +49,7 @@ class EleveSeeder extends Seeder
             [
                 'id_eleve' => 3,
                 'matricule' => 'ELV-0003',
+                'classe_id' => 2,
                 'nom' => 'Mukendi',
                 'postnom' => 'Nsiala',
                 'prenom' => 'Grace',
@@ -59,6 +63,7 @@ class EleveSeeder extends Seeder
             [
                 'id_eleve' => 4,
                 'matricule' => 'ELV-0004',
+                'classe_id' => 2,
                 'nom' => 'Mbuyi',
                 'postnom' => 'Nsimba',
                 'prenom' => 'Sarah',
@@ -72,6 +77,7 @@ class EleveSeeder extends Seeder
             [
                 'id_eleve' => 5,
                 'matricule' => 'ELV-0005',
+                'classe_id' => 3,
                 'nom' => 'Kabila',
                 'postnom' => 'Pierre',
                 'prenom' => 'Pierre',
@@ -84,6 +90,6 @@ class EleveSeeder extends Seeder
             ],
         ]);
 
-        DB::statement('SET FOREIGN_KEY_CHECKS=1');
+        Schema::enableForeignKeyConstraints();
     }
 }

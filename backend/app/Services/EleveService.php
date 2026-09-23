@@ -25,6 +25,7 @@ class EleveService
 
             return Eleve::create([
                 'matricule' => $donnees['matricule'] ?? null,
+                'classe_id' => $donnees['classe_id'] ?? null,
                 'nom' => $donnees['nom'],
                 'postnom' => $donnees['postnom'],
                 'prenom' => $donnees['prenom'],
