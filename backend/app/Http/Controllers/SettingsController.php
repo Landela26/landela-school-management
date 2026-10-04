@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateSettingsRequest;
 use App\Services\SchoolSettingsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -23,25 +24,16 @@ class SettingsController extends Controller
         ]);
     }
 
-    public function update(Request $request): JsonResponse
+    public function update(UpdateSettingsRequest $request): JsonResponse
     {
         if ($response = $this->authorizeAdministrator($request)) {
             return $response;
         }
 
-        $settings = $request->validate([
-            'late_after' => ['required_without:student_deletion_delay_days', 'date_format:H:i'],
-            'student_deletion_delay_days' => [
-                'required_without:late_after',
-                'integer',
-                'min:1',
-            ],
-        ]);
-
         return response()->json([
             'success' => true,
             'message' => 'Paramètres mis à jour avec succès.',
-            'data' => $this->settingsService->updateSettings($settings),
+            'data' => $this->settingsService->updateSettings($request->validated()),
         ]);
     }
 

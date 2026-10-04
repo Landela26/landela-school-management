@@ -44,12 +44,20 @@ class SettingsTest extends TestCase
         $this->actingAs(Utilisateur::factory()->create())
             ->putJson('/api/settings', ['late_after' => '8:30'])
             ->assertUnprocessable()
-            ->assertJsonValidationErrors('late_after');
+            ->assertJsonValidationErrors('late_after')
+            ->assertJsonPath(
+                'errors.late_after.0',
+                'L’heure du seuil de retard doit être au format HH:MM, par exemple 08:30.'
+            );
 
         $this->actingAs(Utilisateur::factory()->create())
             ->putJson('/api/settings', ['student_deletion_delay_days' => 0])
             ->assertUnprocessable()
-            ->assertJsonValidationErrors('student_deletion_delay_days');
+            ->assertJsonValidationErrors('student_deletion_delay_days')
+            ->assertJsonPath(
+                'errors.student_deletion_delay_days.0',
+                'Le délai de suppression doit être d’au moins un jour.'
+            );
 
         $this->actingAs(Utilisateur::factory()->create())
             ->putJson('/api/settings', [])
