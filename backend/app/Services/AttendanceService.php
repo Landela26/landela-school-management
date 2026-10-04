@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class AttendanceService
 {
+    public function __construct(private readonly SchoolSettingsService $settingsService) {}
+
     public function listerCartesNfc(): array
     {
         return CarteNfc::query()
@@ -133,7 +135,7 @@ class AttendanceService
 
         $lateAfter = Carbon::createFromFormat(
             'H:i',
-            (string) config('attendance.late_after', '08:00'),
+            $this->settingsService->getSettings()['late_after'],
             $dateHeure->getTimezone()
         )->setDate(
             $dateHeure->year,
