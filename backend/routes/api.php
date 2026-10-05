@@ -28,6 +28,7 @@ Route::middleware([StartSession::class])->group(function () {
     Route::middleware('auth:sanctum')->get("/students/{id}", [EleveController::class, 'show']);
 
     //attendance routes
+    Route::middleware('auth:sanctum')->get('/attendances', [AttendanceController::class, 'historique']);
     Route::middleware('auth:sanctum')->post('/attendances', [AttendanceController::class, 'enregistrerPointageManuel']);
     Route::middleware('auth:sanctum')->get('/nfc/cards', [AttendanceController::class, 'listerCartesNfc']);
     Route::middleware('auth:sanctum')->get('/nfc/cards/{uid}/verify', [AttendanceController::class, 'verifierCarteNfc']);

@@ -12,6 +12,119 @@ use Illuminate\Database\Eloquent\Builder;
 
 class AttendanceService
 {
+    public function historique(array $filtres): array
+    {
+        $requete = Presence::query()
+            ->with(['eleve.classe', 'attribution.eleve.classe'])
+            ->select([
+                'id_presence',
+                'id_eleve',
+                'date_heure',
+                'statut_presence',
+                'nom_eleve_snapshot',
+                'classe_snapshot',
+                'source_pointage',
+                'remarque',
+            ]);
+
+        if (!empty($filtres['date'])) {
+            $requete->whereDate('date_heure', $filtres['date']);
+        }
+
+        if (isset($filtres['class_id']) || isset($filtres['classe'])) {
+            $requete->where(function (Builder $sousRequete) use ($filtres) {
+                $sousRequete
+                    ->whereHas('eleve', function (Builder $eleve) use ($filtres) {
+                        $eleve->where(function (Builder $classe) use ($filtres) {
+                            if (isset($filtres['class_id'])) {
+                                $classe->where('classe_id', $filtres['class_id']);
+                            } else {
+                                $classe->whereHas('classe', function (Builder $classeQuery) use ($filtres) {
+                                    $classeQuery->where('nom_classe', $filtres['classe']);
+                                });
+                            }
+                        });
+                    })
+                    ->orWhereHas('attribution.eleve', function (Builder $eleve) use ($filtres) {
+                        $eleve->where(function (Builder $classe) use ($filtres) {
+                            if (isset($filtres['class_id'])) {
+                                $classe->where('classe_id', $filtres['class_id']);
+                            } else {
+                                $classe->whereHas('classe', function (Builder $classeQuery) use ($filtres) {
+                                    $classeQuery->where('nom_classe', $filtres['classe']);
+                                });
+                            }
+                        });
+                    });
+            });
+        }
+
+        if (!empty($filtres['statut'])) {
+            $requete->where('statut_presence', $filtres['statut']);
+        }
+
+        $parPage = min(max((int) ($filtres['per_page'] ?? 20), 1), 100);
+        $page = max((int) ($filtres['page'] ?? 1), 1);
+        $total = (clone $requete)->count();
+
+        if ($total === 0) {
+            return [
+                'data' => [],
+                'pagination' => [
+                    'page_courante' => 1,
+                    'derniere_page' => 1,
+                    'par_page' => $parPage,
+                    'total' => 0,
+                    'de' => null,
+                    'a' => null,
+                ],
+            ];
+        }
+
+        $presences = $requete
+            ->orderByDesc('date_heure')
+            ->orderByDesc('id_presence')
+            ->paginate($parPage, ['*'], 'page', $page);
+
+        $donnees = collect($presences->items())
+            ->map(function (Presence $presence): array {
+                $eleve = $presence->eleve ?? $presence->attribution?->eleve;
+
+                return [
+                    'id_presence' => $presence->id_presence,
+                    'id_eleve' => $presence->id_eleve,
+                    'nom_eleve_snapshot' => $presence->nom_eleve_snapshot,
+                    'classe_snapshot' => $presence->classe_snapshot,
+                    'statut_presence' => $presence->statut_presence,
+                    'date_heure' => $presence->date_heure?->toIso8601String(),
+                    'source_pointage' => $presence->source_pointage,
+                    'id' => $presence->id_presence,
+                    'eleve_id' => $presence->id_eleve,
+                    'eleve' => $presence->nom_eleve_snapshot,
+                    'date' => $presence->date_heure?->toDateString(),
+                    'heure' => $presence->date_heure?->format('H:i:s'),
+                    'statut' => $presence->statut_presence,
+                    'classe_id' => $eleve?->classe_id,
+                    'classe' => $presence->classe_snapshot,
+                    'source' => $presence->source_pointage,
+                    'remarque' => $presence->remarque,
+                ];
+            })
+            ->all();
+
+        return [
+            'data' => $donnees,
+            'pagination' => [
+                'page_courante' => $presences->currentPage(),
+                'derniere_page' => $presences->lastPage(),
+                'par_page' => $presences->perPage(),
+                'total' => $presences->total(),
+                'de' => $presences->firstItem(),
+                'a' => $presences->lastItem(),
+            ],
+        ];
+    }
+
     public function listerCartesNfc(): array
     {
         return CarteNfc::query()
