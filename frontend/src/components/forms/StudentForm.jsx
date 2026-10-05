@@ -37,6 +37,7 @@ export default function StudentForm({
   onSubmit,
   onCancel,
   onDismissSuccess,
+  classes = null,
   successTitle = 'Élève enregistré',
   errorTitle = 'Impossible d’enregistrer l’élève',
   submitLabel = 'Enregistrer l’élève',
@@ -126,6 +127,24 @@ export default function StudentForm({
               </div>
               <FieldError message={fieldErrors.dateNaissance} />
             </div>
+
+            {classes && (
+              <div className="sm:col-span-2">
+                <label htmlFor="classe_id" className={labelClass}>
+                  Classe <span className="text-xs font-normal text-slate-400">(facultatif)</span>
+                </label>
+                <select id="classe_id" name="classe_id" value={form.classe_id || ''} onChange={onChange}
+                  disabled={loading} className={inputClass(fieldErrors.classe_id)}>
+                  <option value="">Aucune classe</option>
+                  {classes.map((c) => (
+                    <option key={c.id_classe} value={c.id_classe}>
+                      {c.nom_classe}{c.niveau ? ` — ${c.niveau}` : ''}
+                    </option>
+                  ))}
+                </select>
+                <FieldError message={fieldErrors.classe_id} />
+              </div>
+            )}
           </div>
         </section>
 
@@ -152,7 +171,7 @@ export default function StudentForm({
           <p className="mt-1.5 text-sm text-slate-500">Ajoutez une photo de l’élève si nécessaire.</p>
 
           <label htmlFor="photo"
-            className={`mt-6 flex cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed p-8 text-center transition ${
+            className={`relative mt-6 flex cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed p-8 text-center transition ${
               fieldErrors.photo ? 'border-rose-300 bg-rose-50' : 'border-slate-200 hover:border-navy hover:bg-slate-50'
             }`}>
             <div className="flex h-11 w-11 items-center justify-center rounded-md border border-slate-200 bg-white text-navy">

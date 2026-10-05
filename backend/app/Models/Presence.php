@@ -18,8 +18,11 @@ class Presence extends Model
 
     protected $fillable = [
         'id_attribution',
+        'id_eleve',
         'date_heure',
         'statut_presence',
+        'nom_eleve_snapshot',
+        'classe_snapshot',
         'source_pointage',
         'snapshot',
         'remarque',
@@ -39,6 +42,15 @@ class Presence extends Model
             AttributionCarte::class,
             'id_attribution',
             'id'
+        );
+    }
+
+    public function eleve(): BelongsTo
+    {
+        return $this->belongsTo(
+            Eleve::class,
+            'id_eleve',
+            'id_eleve'
         );
     }
 }

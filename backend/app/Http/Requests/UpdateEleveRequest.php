@@ -25,6 +25,13 @@ class UpdateEleveRequest extends FormRequest
                     ->ignore($eleveId, 'id_eleve'),
             ],
 
+            'classe_id' => [
+                'sometimes',
+                'nullable',
+                'integer',
+                Rule::exists('classes', 'id_classe'),
+            ],
+
             'nom' => [
                 'required',
                 'string',
@@ -75,6 +82,8 @@ class UpdateEleveRequest extends FormRequest
             'matricule.string' => 'Le matricule doit être une chaîne de caractères.',
             'matricule.max' => 'Le matricule ne peut pas dépasser 50 caractères.',
             'matricule.unique' => 'Ce matricule est déjà utilisé par un autre élève.',
+            'classe_id.integer' => "L'identifiant de la classe doit être un entier.",
+            'classe_id.exists' => "La classe sélectionnée n'existe pas.",
 
             'nom.required' => 'Le nom est obligatoire.',
             'nom.string' => 'Le nom doit être une chaîne de caractères.',

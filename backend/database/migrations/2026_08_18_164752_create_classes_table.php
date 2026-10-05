@@ -32,9 +32,6 @@ return new class extends Migration
 
             $table->dateTime('date_creation');
 
-            $table->dateTime('deleted_at')
-                ->nullable();
-
             $table->foreign('id_enseignant')
                 ->references('id_personnel')
                 ->on('personnels')

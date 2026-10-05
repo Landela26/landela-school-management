@@ -31,7 +31,7 @@ class EleveController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = Eleve::query();
+        $query = Eleve::with('classe');
 
         /*
          * Nettoyage des paramètres de recherche.
@@ -212,7 +212,7 @@ class EleveController extends Controller
     public function update(UpdateEleveRequest $request, $id): JsonResponse
     {
 
-        $eleve = Eleve::find($id);
+        $eleve = Eleve::with('classe')->find($id);
         if (!$eleve) {
             return response()->json([
                 'success' => false,

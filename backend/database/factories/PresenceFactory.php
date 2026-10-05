@@ -14,12 +14,15 @@ class PresenceFactory extends Factory
     {
         return [
             'id_attribution' => AttributionCarte::factory(),
+            'id_eleve' => null,
             'date_heure' => now(),
             'statut_presence' => fake()->randomElement([
                 'present',
                 'absent',
                 'retard',
             ]),
+            'nom_eleve_snapshot' => fake()->name(),
+            'classe_snapshot' => fake()->words(2, true),
             'source_pointage' => fake()->randomElement([
                 'manuel',
                 'nfc',

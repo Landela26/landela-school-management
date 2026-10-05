@@ -25,6 +25,7 @@ class EleveService
 
             return Eleve::create([
                 'matricule' => $donnees['matricule'] ?? null,
+                'classe_id' => $donnees['classe_id'] ?? null,
                 'nom' => $donnees['nom'],
                 'postnom' => $donnees['postnom'],
                 'prenom' => $donnees['prenom'],
@@ -69,6 +70,9 @@ class EleveService
             $eleve->date_naissance = $donnees['dateNaissance'] ?? $eleve->date_naissance;
             $eleve->adresse = $donnees['adresse'] ?? $eleve->adresse;
             $eleve->matricule = $donnees['matricule'] ?? $eleve->matricule;
+            if (array_key_exists('classe_id', $donnees)) {
+                $eleve->classe_id = $donnees['classe_id'];
+            }
 
             $eleve->save();
 
