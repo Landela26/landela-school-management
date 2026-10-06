@@ -11,9 +11,11 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
+    "apexcharts": "^7.6.1",
     "axios": "^1.20.0",
     "lucide-react": "^1.41.0",
     "react": "^19.2.6",
+    "react-apexcharts": "^2.1.1",
     "react-dom": "^19.2.6",
     "react-router-dom": "^7.18.3",
     "tailwindcss": "^4.3.3"
