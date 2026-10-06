@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { AlertCircle, CheckCircle2, Clock, History, Loader2, Users, XCircle } from 'lucide-react'
 
 import { getClasses } from '../services/classeService'
@@ -17,9 +17,10 @@ const STATUTS = [
 
 export default function PointagePage() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
 
   const [classesList, setClassesList] = useState([])
-  const [classe, setClasse] = useState('')
+  const [classe, setClasse] = useState(searchParams.get('classe') || '')
   const [date, setDate] = useState(today())
 
   const [roster, setRoster] = useState([])

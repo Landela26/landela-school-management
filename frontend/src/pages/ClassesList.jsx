@@ -1,8 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   AlertCircle,
   AlertTriangle,
   CheckCircle2,
+  ClipboardCheck,
   Loader2,
   Pencil,
   Plus,
@@ -18,6 +20,8 @@ import {
   updateClasse,
   deleteClasse,
 } from "../services/classeService";
+// ApexCharts est lourd : chargé seulement quand la page Classes s'affiche.
+const ClassesPointageChart = lazy(() => import("../components/charts/ClassesPointageChart"));
 import Modal from "../components/ui/Modal";
 
 const EMPTY_FORM = {
@@ -71,6 +75,7 @@ function enseignantLabel(c) {
 }
 
 export default function ClassesList() {
+  const navigate = useNavigate();
   const [classes, setClasses] = useState([]);
   const [enseignants, setEnseignants] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -268,6 +273,13 @@ export default function ClassesList() {
         </div>
       )}
 
+      {/* Pointage par classe (graphique ApexCharts) */}
+      {!loading && !error && (
+        <Suspense fallback={<div className="mb-6 h-56 animate-pulse rounded-lg border border-slate-200 bg-white shadow-sm" />}>
+          <ClassesPointageChart classes={classes} />
+        </Suspense>
+      )}
+
       {/* Carte liste */}
       <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
         {error ? (
@@ -355,6 +367,13 @@ export default function ClassesList() {
                         </td>
                         <td className="px-5 py-4">
                           <div className="flex justify-end gap-2">
+                            <button
+                              type="button"
+                              onClick={() => navigate(`/presences/pointage?classe=${encodeURIComponent(c.nom_classe)}`)}
+                              className="inline-flex h-9 items-center gap-1.5 rounded-md border border-slate-200 px-3 text-sm font-medium text-navy transition hover:border-navy hover:bg-navy/5"
+                            >
+                              <ClipboardCheck size={16} />Pointer
+                            </button>
                             <button
                               type="button"
                               onClick={() => openEdit(c)}
