@@ -5,9 +5,10 @@ import { ArrowLeft, Loader2 } from 'lucide-react'
 import { getStudent, updateStudent } from '../services/studentService'
 import { getClasses } from '../services/classeService'
 import StudentForm from '../components/forms/StudentForm'
+import { validateBirthDate } from '../utils/studentValidation'
 
 const emptyForm = {
-  nom: '', postnom: '', prenom: '', matricule: '',
+  nom: '', postnom: '', prenom: '',
   sexe: '', dateNaissance: '', adresse: '', photo: null, classe_id: '',
 }
 
@@ -41,7 +42,6 @@ export default function EditStudent() {
           nom: student.nom || '',
           postnom: student.postnom || '',
           prenom: student.prenom || '',
-          matricule: student.matricule || '',
           sexe: student.sexe || '',
           dateNaissance: student.date_naissance
             ? new Date(student.date_naissance).toISOString().slice(0, 10) : '',
@@ -72,7 +72,9 @@ export default function EditStudent() {
     if (!form.postnom.trim()) errors.postnom = 'Le postnom est obligatoire.'
     if (!form.prenom.trim()) errors.prenom = 'Le prénom est obligatoire.'
     if (!form.sexe) errors.sexe = 'Veuillez sélectionner le sexe.'
-    if (!form.dateNaissance) errors.dateNaissance = 'La date de naissance est obligatoire.'
+    const dateError = validateBirthDate(form.dateNaissance)
+    if (dateError) errors.dateNaissance = dateError
+    if (!form.classe_id) errors.classe_id = 'Veuillez sélectionner la classe de l’élève.'
     if (!form.adresse.trim()) errors.adresse = "L'adresse est obligatoire."
     if (form.photo && form.photo.size > 2 * 1024 * 1024) errors.photo = 'La photo ne doit pas dépasser 2 Mo.'
     setFieldErrors(errors)
@@ -90,7 +92,6 @@ export default function EditStudent() {
       formData.append('nom', form.nom.trim())
       formData.append('postnom', form.postnom.trim())
       formData.append('prenom', form.prenom.trim())
-      if (form.matricule.trim()) formData.append('matricule', form.matricule.trim())
       formData.append('sexe', form.sexe)
       formData.append('dateNaissance', form.dateNaissance)
       formData.append('adresse', form.adresse.trim())

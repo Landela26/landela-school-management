@@ -1,20 +1,23 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 
 import { createStudent } from '../services/studentService'
 import { getClasses } from '../services/classeService'
 import StudentForm from '../components/forms/StudentForm'
+import { validateBirthDate } from '../utils/studentValidation'
 
 const emptyForm = {
-  nom: '', postnom: '', prenom: '', matricule: '',
+  nom: '', postnom: '', prenom: '',
   sexe: '', dateNaissance: '', adresse: '', photo: null, classe_id: '',
 }
 
 export default function CreateStudent() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const presetClasse = searchParams.get('classe_id') || ''
 
-  const [form, setForm] = useState(emptyForm)
+  const [form, setForm] = useState({ ...emptyForm, classe_id: presetClasse })
   const [fieldErrors, setFieldErrors] = useState({})
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -40,7 +43,9 @@ export default function CreateStudent() {
     if (!form.postnom.trim()) errors.postnom = 'Le postnom est obligatoire.'
     if (!form.prenom.trim()) errors.prenom = 'Le prénom est obligatoire.'
     if (!form.sexe) errors.sexe = 'Veuillez sélectionner le sexe.'
-    if (!form.dateNaissance) errors.dateNaissance = 'La date de naissance est obligatoire.'
+    const dateError = validateBirthDate(form.dateNaissance)
+    if (dateError) errors.dateNaissance = dateError
+    if (!form.classe_id) errors.classe_id = 'Veuillez sélectionner la classe de l’élève.'
     if (!form.adresse.trim()) errors.adresse = "L'adresse est obligatoire."
     if (form.photo && form.photo.size > 2 * 1024 * 1024) errors.photo = 'La photo ne doit pas dépasser 2 Mo.'
     setFieldErrors(errors)
@@ -57,7 +62,6 @@ export default function CreateStudent() {
       formData.append('nom', form.nom.trim())
       formData.append('postnom', form.postnom.trim())
       formData.append('prenom', form.prenom.trim())
-      if (form.matricule.trim()) formData.append('matricule', form.matricule.trim())
       formData.append('sexe', form.sexe)
       formData.append('dateNaissance', form.dateNaissance)
       formData.append('adresse', form.adresse.trim())

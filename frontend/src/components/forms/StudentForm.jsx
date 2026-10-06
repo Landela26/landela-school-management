@@ -8,6 +8,8 @@ import {
   X,
 } from 'lucide-react'
 
+import { maxBirthDate } from '../../utils/studentValidation'
+
 const labelClass = 'mb-2 block text-sm font-medium text-slate-700'
 
 function inputClass(invalid) {
@@ -99,15 +101,6 @@ export default function StudentForm({
             </div>
 
             <div>
-              <label htmlFor="matricule" className={labelClass}>
-                Matricule <span className="text-xs font-normal text-slate-400">(facultatif)</span>
-              </label>
-              <input id="matricule" name="matricule" type="text" value={form.matricule} onChange={onChange}
-                placeholder="Ex. ELV-001" disabled={loading} className={inputClass(fieldErrors.matricule)} />
-              <FieldError message={fieldErrors.matricule} />
-            </div>
-
-            <div>
               <label htmlFor="sexe" className={labelClass}>Sexe <Required /></label>
               <select id="sexe" name="sexe" value={form.sexe} onChange={onChange}
                 disabled={loading} className={inputClass(fieldErrors.sexe)}>
@@ -123,25 +116,26 @@ export default function StudentForm({
               <div className="relative">
                 <CalendarDays size={18} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input id="dateNaissance" name="dateNaissance" type="date" value={form.dateNaissance} onChange={onChange}
-                  disabled={loading} className={`${inputClass(fieldErrors.dateNaissance)} pl-10`} />
+                  max={maxBirthDate()} disabled={loading} className={`${inputClass(fieldErrors.dateNaissance)} pl-10`} />
               </div>
               <FieldError message={fieldErrors.dateNaissance} />
             </div>
 
             {classes && (
               <div className="sm:col-span-2">
-                <label htmlFor="classe_id" className={labelClass}>
-                  Classe <span className="text-xs font-normal text-slate-400">(facultatif)</span>
-                </label>
+                <label htmlFor="classe_id" className={labelClass}>Classe <Required /></label>
                 <select id="classe_id" name="classe_id" value={form.classe_id || ''} onChange={onChange}
                   disabled={loading} className={inputClass(fieldErrors.classe_id)}>
-                  <option value="">Aucune classe</option>
+                  <option value="">Sélectionner une classe</option>
                   {classes.map((c) => (
                     <option key={c.id_classe} value={c.id_classe}>
                       {c.nom_classe}{c.niveau ? ` — ${c.niveau}` : ''}
                     </option>
                   ))}
                 </select>
+                {classes.length === 0 && (
+                  <p className="mt-1.5 text-xs text-amber-600">Aucune classe enregistrée. Créez d'abord une classe dans la section « Classes ».</p>
+                )}
                 <FieldError message={fieldErrors.classe_id} />
               </div>
             )}
