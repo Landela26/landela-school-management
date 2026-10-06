@@ -2,7 +2,9 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { useAuth } from './context/useAuth'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
-import StudentsList from './pages/StudentsList'
+import EleveClasses from './pages/EleveClasses'
+import ClasseEleves from './pages/ClasseEleves'
+import EleveDetail from './pages/EleveDetail'
 import CreateStudent from './pages/CreateStudent'
 import EditStudent from './pages/EditStudent'
 import ClassesList from './pages/ClassesList'
@@ -50,8 +52,10 @@ function App() {
         }
       >
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/eleves" element={<StudentsList />} />
+        <Route path="/eleves" element={<EleveClasses />} />
         <Route path="/eleves/nouveau" element={<CreateStudent />} />
+        <Route path="/eleves/classe/:classeId" element={<ClasseEleves />} />
+        <Route path="/eleves/eleve/:id" element={<EleveDetail />} />
         <Route path="/eleves/:id/modifier" element={<EditStudent />} />
         <Route path="/classes" element={<ClassesList />} />
         <Route path="/presences" element={<PresencesList />} />
