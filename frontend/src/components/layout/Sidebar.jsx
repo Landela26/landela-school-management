@@ -4,7 +4,7 @@ import {
   GraduationCap,
   School,
   ClipboardCheck,
-  UserCog,
+  Settings,
   LogOut,
 } from "lucide-react";
 import logo from "../../assets/logo-landela.png";
@@ -15,7 +15,7 @@ const NAV_ITEMS = [
   { to: "/eleves", label: "Élèves", icon: GraduationCap },
   { to: "/classes", label: "Classes", icon: School },
   { to: "/presences", label: "Présences", icon: ClipboardCheck },
-  { to: "/personnel", label: "Personnel", icon: UserCog },
+  { to: "/parametres", label: "Paramètres", icon: Settings },
 ];
 
 function Sidebar() {

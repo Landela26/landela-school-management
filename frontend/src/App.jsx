@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard'
 import StudentsList from './pages/StudentsList'
 import CreateStudent from './pages/CreateStudent'
 import EditStudent from './pages/EditStudent'
+import ParametresPage from './pages/ParametresPage'
 import ClassesList from './pages/ClassesList'
 import PresencesList from './pages/PresencesList'
 import PointagePage from './pages/PointagePage'
@@ -57,6 +58,7 @@ function App() {
         <Route path="/presences" element={<PresencesList />} />
         <Route path="/presences/pointage" element={<PointagePage />} />
         {/* <Route path="/personnel" element={<Staff />} /> */}
+        <Route path="/parametres" element={<ParametresPage />} />
       </Route>
 
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
