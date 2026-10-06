@@ -6,33 +6,52 @@ const USE_MOCKS = import.meta.env.VITE_USE_MOCKS === 'true'
 
 const delay = (ms) => new Promise((r) => setTimeout(r, ms))
 
-// Valeurs par défaut raisonnables si l'école n'a rien configuré (critère 3).
+// Valeurs par défaut si l'école n'a rien configuré (critère 3 du ticket F10).
 export const DEFAULT_SETTINGS = {
   seuil_retard: '08:00',        // heure au-delà de laquelle un pointage = retard
   delai_suppression_jours: 30,  // jours avant purge définitive d'un élève soft-deleted
 }
 
-// État mock en mémoire (simule la ligne unique des paramètres d'établissement).
 let MOCK_SETTINGS = { ...DEFAULT_SETTINGS }
 
+// Endpoint absent côté serveur (404) : message clair, jamais de fausse sauvegarde.
+function unavailable(err) {
+  if (err.response?.status === 404) {
+    return new Error('Le service des paramètres n’est pas encore disponible sur le serveur.')
+  }
+  return err
+}
+
+// Contrat back F10 : late_after (HH:MM), student_deletion_delay_days (entier ≥ 1).
+const fromApi = (data = {}) => ({
+  seuil_retard: data.late_after ?? DEFAULT_SETTINGS.seuil_retard,
+  delai_suppression_jours: data.student_deletion_delay_days ?? DEFAULT_SETTINGS.delai_suppression_jours,
+})
+const toApi = (payload) => ({
+  late_after: payload.seuil_retard,
+  student_deletion_delay_days: Number(payload.delai_suppression_jours),
+})
+
 /**
- * Récupère les paramètres d'établissement.
- * Contrat : GET /api/settings
- * @returns {Promise<Object>} { success, data:{ seuil_retard, delai_suppression_jours } }
+ * Récupère les paramètres d'établissement (réservé aux administrateurs).
+ * GET /api/settings → { success, data:{ late_after, student_deletion_delay_days } }
  */
 export async function getSettings() {
   if (USE_MOCKS) {
     await delay(300)
     return { success: true, data: { ...MOCK_SETTINGS } }
   }
-  const response = await api.get('/settings')
-  return response.data
+  try {
+    const { data } = await api.get('/settings')
+    return { ...data, data: fromApi(data?.data) }
+  } catch (err) {
+    throw unavailable(err)
+  }
 }
 
 /**
- * Met à jour les paramètres d'établissement.
- * Contrat : PUT /api/settings  (JSON → PUT réel géré par Laravel, pas de spoofing)
- * @param {Object} payload - { seuil_retard, delai_suppression_jours }
+ * Met à jour les paramètres d'établissement (réservé aux administrateurs).
+ * PUT /api/settings (JSON) { late_after, student_deletion_delay_days }
  */
 export async function updateSettings(payload) {
   if (USE_MOCKS) {
@@ -43,6 +62,10 @@ export async function updateSettings(payload) {
     }
     return { success: true, message: 'Paramètres enregistrés.', data: { ...MOCK_SETTINGS } }
   }
-  const response = await api.put('/settings', payload)
-  return response.data
+  try {
+    const { data } = await api.put('/settings', toApi(payload))
+    return { ...data, data: fromApi(data?.data) }
+  } catch (err) {
+    throw unavailable(err)
+  }
 }
