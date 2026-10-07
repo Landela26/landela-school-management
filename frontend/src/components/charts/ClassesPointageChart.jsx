@@ -6,6 +6,7 @@ import { BarChart3, ChevronRight, Table2 } from 'lucide-react'
 import { getStudents } from '../../services/studentService'
 import { getAttendances } from '../../services/attendanceService'
 import { INK, STATUTS, baseChart, localToday } from './chartTheme'
+import { latestPerStudent } from '../../utils/attendance'
 
 export default function ClassesPointageChart({ classes, showClassesLink = false }) {
   const navigate = useNavigate()
@@ -37,15 +38,9 @@ export default function ClassesPointageChart({ classes, showClassesLink = false 
     setError('')
     try {
       const res = await getAttendances({ date: d, per_page: 100 })
-      // Un statut par élève et par jour : on garde le plus récent.
-      const latest = {}
-      ;(res?.data || []).forEach((a) => {
-        const id = a.id_eleve ?? a.eleve_id
-        const prev = latest[id]
-        if (!prev || new Date(a.date_heure) > new Date(prev.date_heure)) latest[id] = a
-      })
+      // Un statut par élève et par jour (le plus récent), y compris les élèves purgés (F13).
       const agg = {}
-      Object.values(latest).forEach((a) => {
+      latestPerStudent(res?.data || []).forEach((a) => {
         const k = a.classe_snapshot || '—'
         agg[k] = agg[k] || { present: 0, retard: 0, absent: 0 }
         if (agg[k][a.statut_presence] !== undefined) agg[k][a.statut_presence] += 1
@@ -79,7 +74,8 @@ export default function ClassesPointageChart({ classes, showClassesLink = false 
       absent: s.absent,
       non_pointe: Math.max(eff - pointes, 0),
       pointes,
-      taux: eff ? Math.round((pointes / eff) * 100) : 0,
+      // Plafonné : sur une date passée, des élèves purgés (F13) ne sont plus dans l’effectif actuel.
+      taux: eff ? Math.min(100, Math.round((pointes / eff) * 100)) : 0,
     }
   }), [classes, effectifs, statsByClasse])
 

@@ -5,21 +5,16 @@ import { getClasses } from '../../services/classeService'
 import { getStudents } from '../../services/studentService'
 import { getAttendances } from '../../services/attendanceService'
 import { BRAND, STATUTS, localToday } from './chartTheme'
+import { latestPerStudent } from '../../utils/attendance'
 import KpiTile from './KpiTile'
 import ClassesPointageChart from './ClassesPointageChart'
 
 const color = (key) => STATUTS.find((s) => s.key === key).color
 
-/** Statuts du jour : un seul pointage (le plus récent) par élève. */
+/** Statuts du jour : un seul pointage (le plus récent) par élève, y compris les élèves purgés. */
 function countDay(rows) {
-  const latest = {}
-  rows.forEach((a) => {
-    const id = a.id_eleve ?? a.eleve_id
-    if (id == null) return
-    if (!latest[id] || new Date(a.date_heure) > new Date(latest[id].date_heure)) latest[id] = a
-  })
   const c = { present: 0, retard: 0, absent: 0 }
-  Object.values(latest).forEach((a) => {
+  latestPerStudent(rows).forEach((a) => {
     if (c[a.statut_presence] !== undefined) c[a.statut_presence] += 1
   })
   return c
@@ -96,7 +91,7 @@ export default function DashboardAnalytics() {
   const effectif = eleves.length
   const actifs = eleves.filter((e) => e.statut === 'actif').length
   const annees = [...new Set(classes.map((c) => c.annee_scolaire).filter(Boolean))]
-  const taux = effectif ? Math.round(((jour.present + jour.retard) / effectif) * 100) : 0
+  const taux = effectif ? Math.min(100, Math.round(((jour.present + jour.retard) / effectif) * 100)) : 0
 
   return (
     <div className="space-y-8">
