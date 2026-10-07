@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { AlertCircle, ArrowLeft, ChevronRight, Plus, Search, Users } from 'lucide-react'
 
+import SuccessBanner from '../components/ui/SuccessBanner'
 import { getClasses } from '../services/classeService'
 import { getStudents } from '../services/studentService'
 import { computeAge } from '../utils/studentValidation'
@@ -10,7 +11,15 @@ const initials = (e) => ((e.nom?.[0] || '') + (e.prenom?.[0] || '')).toUpperCase
 
 export default function ClasseEleves() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { classeId } = useParams()
+
+  // Message transmis après une action (ex. suppression d'un élève), affiché une seule fois.
+  const [flash, setFlash] = useState(location.state?.flash || '')
+  useEffect(() => {
+    if (location.state?.flash) navigate(location.pathname, { replace: true, state: null })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const [classe, setClasse] = useState(null)
   const [eleves, setEleves] = useState([])
@@ -74,6 +83,9 @@ export default function ClasseEleves() {
           </div>
         </div>
       </div>
+
+      <SuccessBanner message={flash} onClose={() => setFlash('')}
+        action={{ label: 'Voir les élèves supprimés', onClick: () => navigate('/eleves/supprimes') }} />
 
       {/* Recherche */}
       {!loading && !error && eleves.length > 0 && (

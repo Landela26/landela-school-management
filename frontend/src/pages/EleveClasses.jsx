@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { AlertCircle, ChevronRight, GraduationCap, Plus, School, Users } from 'lucide-react'
+import { AlertCircle, ChevronRight, GraduationCap, Plus, School, Trash2, Users } from 'lucide-react'
 
 import { getClasses } from '../services/classeService'
 import { getStudents } from '../services/studentService'
@@ -45,10 +45,16 @@ export default function EleveClasses() {
           <h1 className="font-display text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">Élèves par classe</h1>
           <p className="mt-1.5 text-sm text-slate-500">Choisissez une classe pour consulter ses élèves.</p>
         </div>
-        <button type="button" onClick={() => navigate('/eleves/nouveau')}
-          className="inline-flex items-center justify-center gap-2 rounded-md bg-navy px-4 py-2.5 text-sm font-medium text-white transition hover:bg-navy-dark active:scale-[0.97]">
-          <Plus size={17} />Ajouter un élève
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <button type="button" onClick={() => navigate('/eleves/supprimes')}
+            className="inline-flex items-center justify-center gap-2 rounded-md border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 active:scale-[0.97]">
+            <Trash2 size={16} />Élèves supprimés
+          </button>
+          <button type="button" onClick={() => navigate('/eleves/nouveau')}
+            className="inline-flex items-center justify-center gap-2 rounded-md bg-navy px-4 py-2.5 text-sm font-medium text-white transition hover:bg-navy-dark active:scale-[0.97]">
+            <Plus size={17} />Ajouter un élève
+          </button>
+        </div>
       </div>
 
       {error ? (
