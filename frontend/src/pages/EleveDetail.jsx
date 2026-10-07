@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { AlertCircle, ArrowLeft, ClipboardList, Cpu, Hand, Loader2, MapPin, Pencil } from 'lucide-react'
+import { AlertCircle, ArrowLeft, ClipboardList, Cpu, Hand, Loader2, MapPin, Pencil, Trash2 } from 'lucide-react'
 
-import { getStudent } from '../services/studentService'
+import Modal from '../components/ui/Modal'
+import useGracePeriod from '../hooks/useGracePeriod'
+import { deleteStudent, getStudent } from '../services/studentService'
 import { getClasses } from '../services/classeService'
 import { getAttendances } from '../services/attendanceService'
 import { computeAge } from '../utils/studentValidation'
@@ -52,6 +54,27 @@ export default function EleveDetail() {
   const [history, setHistory] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+
+  // F12 : suppression (soft delete) avec confirmation
+  const graceDays = useGracePeriod()
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState('')
+
+  const handleDelete = async () => {
+    setDeleting(true); setDeleteError('')
+    try {
+      await deleteStudent(eleve.id_eleve)
+      const nomComplet = [eleve.nom, eleve.postnom, eleve.prenom].filter(Boolean).join(' ')
+      navigate(eleve.classe_id ? `/eleves/classe/${eleve.classe_id}` : '/eleves', {
+        replace: true,
+        state: { flash: `${nomComplet} a été retiré de la liste des élèves.` },
+      })
+    } catch (err) {
+      setDeleteError(err.response?.data?.message || err.message || 'La suppression a échoué.')
+      setDeleting(false)
+    }
+  }
 
   const load = async () => {
     setLoading(true); setError('')
@@ -144,10 +167,16 @@ export default function EleveDetail() {
               </p>
             </div>
           </div>
-          <button type="button" onClick={() => navigate(`/eleves/${eleve.id_eleve}/modifier`)}
-            className="inline-flex items-center justify-center gap-2 rounded-md border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50">
-            <Pencil size={15} />Modifier
-          </button>
+          <div className="flex gap-2">
+            <button type="button" onClick={() => navigate(`/eleves/${eleve.id_eleve}/modifier`)}
+              className="inline-flex items-center justify-center gap-2 rounded-md border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 active:scale-[0.97]">
+              <Pencil size={15} />Modifier
+            </button>
+            <button type="button" onClick={() => { setDeleteError(''); setConfirmOpen(true) }}
+              className="inline-flex items-center justify-center gap-2 rounded-md border border-rose-200 bg-white px-4 py-2.5 text-sm font-medium text-rose-600 transition hover:bg-rose-50 active:scale-[0.97]">
+              <Trash2 size={15} />Supprimer
+            </button>
+          </div>
         </div>
         <div className="grid grid-cols-1 gap-px border-t border-slate-100 bg-slate-100 sm:grid-cols-2">
           <div className="bg-white p-4 md:px-8">
@@ -212,6 +241,38 @@ export default function EleveDetail() {
           </div>
         )}
       </div>
+
+      {/* Confirmation de suppression (F12) */}
+      <Modal open={confirmOpen} onClose={() => !deleting && setConfirmOpen(false)} title="Supprimer cet élève ?" maxWidth="max-w-md">
+        <div className="space-y-4 px-5 py-5">
+          <p className="text-sm leading-6 text-slate-600">
+            <span className="font-semibold text-slate-900">{eleve.nom} {eleve.postnom} {eleve.prenom}</span> sera retiré
+            de la liste des élèves. Son historique de présence est conservé.
+          </p>
+          <p className="rounded-md bg-slate-50 px-3 py-2.5 text-sm leading-6 text-slate-600">
+            Vous pourrez le réintégrer depuis « Élèves supprimés »
+            {graceDays
+              ? <> pendant <span className="font-semibold text-slate-900">{graceDays} jours</span>. Passé ce délai, la suppression sera définitive.</>
+              : <>, pendant la période définie dans les Paramètres.</>}
+          </p>
+          {deleteError && (
+            <p className="flex items-start gap-2 rounded-md bg-rose-50 px-3 py-2.5 text-sm text-rose-700">
+              <AlertCircle size={16} className="mt-0.5 shrink-0" />{deleteError}
+            </p>
+          )}
+          <div className="flex justify-end gap-2 pt-1">
+            <button type="button" onClick={() => setConfirmOpen(false)} disabled={deleting}
+              className="rounded-md border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 disabled:opacity-50">
+              Annuler
+            </button>
+            <button type="button" onClick={handleDelete} disabled={deleting}
+              className="inline-flex items-center gap-2 rounded-md bg-rose-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-rose-700 active:scale-[0.97] disabled:opacity-60">
+              {deleting ? <Loader2 size={15} className="animate-spin" /> : <Trash2 size={15} />}
+              {deleting ? 'Suppression…' : 'Supprimer'}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   )
 }
