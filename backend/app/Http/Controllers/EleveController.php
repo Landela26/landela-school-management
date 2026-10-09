@@ -244,4 +244,39 @@ class EleveController extends Controller
             'data' => $eleve,
         ], 200);
     }
+
+    public function destroy(Request $request, string $id): JsonResponse
+    {
+        if ($response = $this->authorizeAdministrator($request)) {
+            return $response;
+        }
+
+        $eleve = Eleve::find($id);
+        if (!$eleve) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Élève non trouvé ou déjà supprimé.',
+            ], 404);
+        }
+
+        $eleve->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Élève supprimé avec succès.',
+            'data' => $eleve,
+        ]);
+    }
+
+    private function authorizeAdministrator(Request $request): ?JsonResponse
+    {
+        if (in_array($request->user()?->role, ['admin', 'super_admin'], true)) {
+            return null;
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Accès réservé aux administrateurs.',
+        ], 403);
+    }
 }
