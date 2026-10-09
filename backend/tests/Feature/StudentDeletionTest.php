@@ -88,6 +88,11 @@ class StudentDeletionTest extends TestCase
         $expired->deleted_at = now()->subDays(31);
         $expired->saveQuietly();
 
+        $atGracePeriodBoundary = Eleve::factory()->create();
+        $atGracePeriodBoundary->delete();
+        $atGracePeriodBoundary->deleted_at = now()->subDays(30);
+        $atGracePeriodBoundary->saveQuietly();
+
         $active = Eleve::factory()->create();
 
         $this->actingAs(Utilisateur::factory()->create())
@@ -95,7 +100,9 @@ class StudentDeletionTest extends TestCase
             ->assertOk()
             ->assertJsonPath('success', true)
             ->assertJsonPath('data.0.id_eleve', $eligible->id_eleve)
+            ->assertJsonStructure(['data' => [['id_eleve', 'deleted_at']]])
             ->assertJsonMissing(['id_eleve' => $expired->id_eleve])
+            ->assertJsonMissing(['id_eleve' => $atGracePeriodBoundary->id_eleve])
             ->assertJsonMissing(['id_eleve' => $active->id_eleve])
             ->assertJsonPath('pagination.total', 1);
     }
@@ -151,6 +158,16 @@ class StudentDeletionTest extends TestCase
             'deleted_at' => null,
         ]);
         $this->assertDatabaseCount('eleves', 1);
+
+        $this->actingAs(Utilisateur::factory()->create())
+            ->getJson('/api/students')
+            ->assertOk()
+            ->assertJsonFragment(['id_eleve' => $eleve->id_eleve]);
+
+        $this->actingAs(Utilisateur::factory()->create())
+            ->getJson('/api/students/deleted')
+            ->assertOk()
+            ->assertJsonPath('data', []);
     }
 
     public function test_restoring_an_unknown_active_or_expired_student_returns_an_error(): void
