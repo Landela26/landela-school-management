@@ -127,4 +127,83 @@ class StudentDeletionTest extends TestCase
             ->getJson('/api/students/deleted')
             ->assertForbidden();
     }
+
+    public function test_administrator_can_restore_a_deleted_student_within_the_configured_grace_period(): void
+    {
+        $this->travelTo(Carbon::parse('2026-10-09 12:00:00'));
+        app(SchoolSettingsService::class)->updateSettings([
+            'student_deletion_delay_days' => 5,
+        ]);
+
+        $eleve = Eleve::factory()->create();
+        $eleve->delete();
+        $eleve->deleted_at = now()->subDays(4);
+        $eleve->saveQuietly();
+
+        $this->actingAs(Utilisateur::factory()->create())
+            ->postJson("/api/students/{$eleve->id_eleve}/restore")
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.id_eleve', $eleve->id_eleve);
+
+        $this->assertDatabaseHas('eleves', [
+            'id_eleve' => $eleve->id_eleve,
+            'deleted_at' => null,
+        ]);
+        $this->assertDatabaseCount('eleves', 1);
+    }
+
+    public function test_restoring_an_unknown_active_or_expired_student_returns_an_error(): void
+    {
+        $this->travelTo(Carbon::parse('2026-10-09 12:00:00'));
+        app(SchoolSettingsService::class)->updateSettings([
+            'student_deletion_delay_days' => 5,
+        ]);
+
+        $admin = Utilisateur::factory()->create();
+        $active = Eleve::factory()->create();
+        $expired = Eleve::factory()->create();
+        $expired->delete();
+        $expired->deleted_at = now()->subDays(5);
+        $expired->saveQuietly();
+
+        $this->actingAs($admin)
+            ->postJson('/api/students/999999/restore')
+            ->assertNotFound()
+            ->assertJsonPath('success', false);
+
+        $this->actingAs($admin)
+            ->postJson("/api/students/{$active->id_eleve}/restore")
+            ->assertStatus(409)
+            ->assertJsonPath('success', false);
+
+        $this->actingAs($admin)
+            ->postJson("/api/students/{$expired->id_eleve}/restore")
+            ->assertStatus(410)
+            ->assertJsonPath('success', false);
+
+        $this->assertSoftDeleted('eleves', [
+            'id_eleve' => $expired->id_eleve,
+        ]);
+    }
+
+    public function test_student_restoration_requires_authentication_and_an_administrator_role(): void
+    {
+        $eleve = Eleve::factory()->create();
+        $eleve->delete();
+
+        $this->postJson("/api/students/{$eleve->id_eleve}/restore")
+            ->assertUnauthorized();
+
+        $nonAdministrator = new Utilisateur();
+        $nonAdministrator->role = 'teacher';
+
+        $this->actingAs($nonAdministrator)
+            ->postJson("/api/students/{$eleve->id_eleve}/restore")
+            ->assertForbidden();
+
+        $this->assertSoftDeleted('eleves', [
+            'id_eleve' => $eleve->id_eleve,
+        ]);
+    }
 }

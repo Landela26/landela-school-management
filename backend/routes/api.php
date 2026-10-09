@@ -29,6 +29,7 @@ Route::middleware([StartSession::class])->group(function () {
     Route::middleware('auth:sanctum')->post("/students", [EleveController::class, 'store']);
     Route::middleware('auth:sanctum')->get("/students/deleted", [EleveController::class, 'deleted']);
     Route::middleware('auth:sanctum')->delete("/students/{id}", [EleveController::class, 'destroy']);
+    Route::middleware('auth:sanctum')->post("/students/{id}/restore", [EleveController::class, 'restore']);
     Route::middleware('auth:sanctum')->put("/students/{id}", [EleveController::class, 'update']);
     Route::middleware('auth:sanctum')->get("/students/{id}", [EleveController::class, 'show']);
 

@@ -307,6 +307,58 @@ class EleveController extends Controller
         ]);
     }
 
+    public function restore(Request $request, string $id): JsonResponse
+    {
+        if ($response = $this->authorizeAdministrator($request)) {
+            return $response;
+        }
+
+        $eleve = Eleve::withTrashed()->find($id);
+        if (!$eleve) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Élève non trouvé.',
+            ], 404);
+        }
+
+        if (!$eleve->trashed()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cet élève est déjà actif.',
+            ], 409);
+        }
+
+        $gracePeriodDays = $this->settingsService->getSettings()['student_deletion_delay_days'];
+        if (!$eleve->deleted_at->copy()->addDays($gracePeriodDays)->isFuture()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'La période de réintégration de cet élève est expirée.',
+            ], 410);
+        }
+
+        if (
+            $eleve->matricule !== null &&
+            Eleve::query()
+                ->where('matricule', $eleve->matricule)
+                ->where('id_eleve', '!=', $eleve->id_eleve)
+                ->exists()
+        ) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Un autre élève utilise déjà ce matricule.',
+            ], 409);
+        }
+
+        $eleve->restore();
+        $eleve->load('classe');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Élève réintégré avec succès.',
+            'data' => $eleve,
+        ]);
+    }
+
     private function authorizeAdministrator(Request $request): ?JsonResponse
     {
         if (in_array($request->user()?->role, ['admin', 'super_admin'], true)) {
