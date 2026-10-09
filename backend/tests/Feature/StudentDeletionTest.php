@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use App\Models\Eleve;
 use App\Models\Utilisateur;
+use App\Services\SchoolSettingsService;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -67,5 +69,62 @@ class StudentDeletionTest extends TestCase
             'id_eleve' => $eleve->id_eleve,
             'deleted_at' => null,
         ]);
+    }
+
+    public function test_deleted_student_list_only_includes_students_within_the_grace_period(): void
+    {
+        $this->travelTo(Carbon::parse('2026-10-09 12:00:00'));
+        app(SchoolSettingsService::class)->updateSettings([
+            'student_deletion_delay_days' => 30,
+        ]);
+
+        $eligible = Eleve::factory()->create();
+        $eligible->delete();
+        $eligible->deleted_at = now()->subDays(29);
+        $eligible->saveQuietly();
+
+        $expired = Eleve::factory()->create();
+        $expired->delete();
+        $expired->deleted_at = now()->subDays(31);
+        $expired->saveQuietly();
+
+        $active = Eleve::factory()->create();
+
+        $this->actingAs(Utilisateur::factory()->create())
+            ->getJson('/api/students/deleted')
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.0.id_eleve', $eligible->id_eleve)
+            ->assertJsonMissing(['id_eleve' => $expired->id_eleve])
+            ->assertJsonMissing(['id_eleve' => $active->id_eleve])
+            ->assertJsonPath('pagination.total', 1);
+    }
+
+    public function test_deleted_student_list_uses_the_configured_grace_period_and_requires_an_administrator(): void
+    {
+        $this->travelTo(Carbon::parse('2026-10-09 12:00:00'));
+        app(SchoolSettingsService::class)->updateSettings([
+            'student_deletion_delay_days' => 5,
+        ]);
+
+        $eleve = Eleve::factory()->create();
+        $eleve->delete();
+        $eleve->deleted_at = now()->subDays(6);
+        $eleve->saveQuietly();
+
+        $admin = Utilisateur::factory()->create();
+
+        $this->actingAs($admin)
+            ->getJson('/api/students/deleted')
+            ->assertOk()
+            ->assertJsonPath('data', [])
+            ->assertJsonPath('pagination.total', 0);
+
+        $nonAdministrator = new Utilisateur();
+        $nonAdministrator->role = 'teacher';
+
+        $this->actingAs($nonAdministrator)
+            ->getJson('/api/students/deleted')
+            ->assertForbidden();
     }
 }
