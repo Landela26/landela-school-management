@@ -6,13 +6,15 @@ use App\Http\Requests\StoreEleveRequest;
 use App\Http\Requests\UpdateEleveRequest;
 use App\Models\Eleve;
 use App\Services\EleveService;
+use App\Services\SchoolSettingsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class EleveController extends Controller
 {
     public function __construct(
-        private readonly EleveService $eleveService
+        private readonly EleveService $eleveService,
+        private readonly SchoolSettingsService $settingsService
     ) {}
 
 
@@ -243,5 +245,129 @@ class EleveController extends Controller
             'message' => 'Élève récupéré avec succès.',
             'data' => $eleve,
         ], 200);
+    }
+
+    public function deleted(Request $request): JsonResponse
+    {
+        if ($response = $this->authorizeAdministrator($request)) {
+            return $response;
+        }
+
+        $gracePeriodDays = $this->settingsService->getSettings()['student_deletion_delay_days'];
+        $cutoff = now()->subDays($gracePeriodDays);
+        $query = Eleve::onlyTrashed()
+            ->with('classe')
+            ->where('deleted_at', '>', $cutoff);
+
+        $perPage = min(max((int) $request->input('per_page', 20), 1), 100);
+        $total = (clone $query)->count();
+        $lastPage = max((int) ceil($total / $perPage), 1);
+        $page = min(max((int) $request->input('page', 1), 1), $lastPage);
+        $eleves = $query
+            ->orderByDesc('deleted_at')
+            ->paginate($perPage, ['*'], 'page', $page);
+
+        return response()->json([
+            'success' => true,
+            'message' => $eleves->isEmpty()
+                ? 'Aucun élève supprimé ne peut être réintégré.'
+                : 'Liste des élèves supprimés récupérée avec succès.',
+            'data' => $eleves->items(),
+            'pagination' => [
+                'page_courante' => $eleves->currentPage(),
+                'derniere_page' => $eleves->lastPage(),
+                'par_page' => $eleves->perPage(),
+                'total' => $eleves->total(),
+                'de' => $eleves->firstItem(),
+                'a' => $eleves->lastItem(),
+            ],
+        ]);
+    }
+
+    public function destroy(Request $request, string $id): JsonResponse
+    {
+        if ($response = $this->authorizeAdministrator($request)) {
+            return $response;
+        }
+
+        $eleve = Eleve::find($id);
+        if (!$eleve) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Élève non trouvé ou déjà supprimé.',
+            ], 404);
+        }
+
+        $eleve->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Élève supprimé avec succès.',
+            'data' => $eleve,
+        ]);
+    }
+
+    public function restore(Request $request, string $id): JsonResponse
+    {
+        if ($response = $this->authorizeAdministrator($request)) {
+            return $response;
+        }
+
+        $eleve = Eleve::withTrashed()->find($id);
+        if (!$eleve) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Élève non trouvé.',
+            ], 404);
+        }
+
+        if (!$eleve->trashed()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cet élève est déjà actif.',
+            ], 409);
+        }
+
+        $gracePeriodDays = $this->settingsService->getSettings()['student_deletion_delay_days'];
+        if (!$eleve->deleted_at->copy()->addDays($gracePeriodDays)->isFuture()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'La période de réintégration de cet élève est expirée.',
+            ], 410);
+        }
+
+        if (
+            $eleve->matricule !== null &&
+            Eleve::query()
+                ->where('matricule', $eleve->matricule)
+                ->where('id_eleve', '!=', $eleve->id_eleve)
+                ->exists()
+        ) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Un autre élève utilise déjà ce matricule.',
+            ], 409);
+        }
+
+        $eleve->restore();
+        $eleve->load('classe');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Élève réintégré avec succès.',
+            'data' => $eleve,
+        ]);
+    }
+
+    private function authorizeAdministrator(Request $request): ?JsonResponse
+    {
+        if (in_array($request->user()?->role, ['admin', 'super_admin'], true)) {
+            return null;
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Accès réservé aux administrateurs.',
+        ], 403);
     }
 }

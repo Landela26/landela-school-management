@@ -117,6 +117,8 @@ Principaux endpoints :
 - Présences
 - NFC
 
+Les endpoints de suppression logique et de réintégration des élèves sont décrits dans [docs/student-deletion-api.md](docs/student-deletion-api.md).
+
 ---
 
 #  Workflow Git
