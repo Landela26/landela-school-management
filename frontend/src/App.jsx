@@ -2,9 +2,12 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { useAuth } from './context/useAuth'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
-import StudentsList from './pages/StudentsList'
+import EleveClasses from './pages/EleveClasses'
+import ClasseEleves from './pages/ClasseEleves'
+import EleveDetail from './pages/EleveDetail'
 import CreateStudent from './pages/CreateStudent'
 import EditStudent from './pages/EditStudent'
+import ParametresPage from './pages/ParametresPage'
 import ClassesList from './pages/ClassesList'
 import PresencesList from './pages/PresencesList'
 import PointagePage from './pages/PointagePage'
@@ -50,13 +53,16 @@ function App() {
         }
       >
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/eleves" element={<StudentsList />} />
+        <Route path="/eleves" element={<EleveClasses />} />
         <Route path="/eleves/nouveau" element={<CreateStudent />} />
+        <Route path="/eleves/classe/:classeId" element={<ClasseEleves />} />
+        <Route path="/eleves/eleve/:id" element={<EleveDetail />} />
         <Route path="/eleves/:id/modifier" element={<EditStudent />} />
         <Route path="/classes" element={<ClassesList />} />
         <Route path="/presences" element={<PresencesList />} />
         <Route path="/presences/pointage" element={<PointagePage />} />
         {/* <Route path="/personnel" element={<Staff />} /> */}
+        <Route path="/parametres" element={<ParametresPage />} />
       </Route>
 
       <Route path="/" element={<Navigate to="/dashboard" replace />} />

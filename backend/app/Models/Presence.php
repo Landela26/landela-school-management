@@ -44,4 +44,13 @@ class Presence extends Model
             'id'
         );
     }
+
+    public function eleve(): BelongsTo
+    {
+        return $this->belongsTo(
+            Eleve::class,
+            'id_eleve',
+            'id_eleve'
+        );
+    }
 }

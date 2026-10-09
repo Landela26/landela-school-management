@@ -28,6 +28,24 @@ class PresenceSeeder extends Seeder
 
         foreach ($attributions as $attribution) {
 
+            $eleve = DB::table('eleves')
+                ->where('id_eleve', $attribution->id_eleve)
+                ->first();
+
+            if (!$eleve) {
+                continue;
+            }
+
+            $nomEleve = trim(implode(' ', array_filter([
+                $eleve->nom,
+                $eleve->postnom,
+                $eleve->prenom,
+            ])));
+            $classe = DB::table('classes')
+                ->where('id_classe', $eleve->classe_id)
+                ->first();
+            $nomClasse = $classe?->nom_classe ?? 'Sans classe';
+
             $statut = match ($attribution->id_eleve) {
                 1 => 'present',
                 2 => 'retard',
@@ -39,10 +57,16 @@ class PresenceSeeder extends Seeder
 
             $presences[] = [
                 'id_attribution' => $attribution->id,
+                'id_eleve' => $eleve->id_eleve,
                 'date_heure' => $today->copy()->setTime(7, 30),
                 'statut_presence' => $statut,
                 'source_pointage' => 'manuel',
-                'snapshot' => null,
+                'nom_eleve_snapshot' => $nomEleve,
+                'classe_snapshot' => $nomClasse,
+                'snapshot' => json_encode([
+                    'nom_eleve' => $nomEleve,
+                    'classe' => $nomClasse,
+                ], JSON_THROW_ON_ERROR),
                 'remarque' => $statut === 'retard'
                     ? 'Arrivée après l’heure prévue'
                     : null,

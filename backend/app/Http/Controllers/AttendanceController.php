@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\AttendanceAlreadyRecordedException;
+use App\Http\Requests\IndexAttendanceRequest;
 use App\Http\Requests\StoreAttendanceRequest;
 use App\Http\Requests\StoreNfcScanRequest;
 use App\Services\AttendanceService;
@@ -11,6 +12,20 @@ use Illuminate\Http\JsonResponse;
 class AttendanceController extends Controller
 {
     public function __construct(private readonly AttendanceService $attendanceService) {}
+
+    public function historique(IndexAttendanceRequest $request): JsonResponse
+    {
+        $resultat = $this->attendanceService->historique($request->validated());
+
+        return response()->json([
+            'success' => true,
+            'message' => empty($resultat['data'])
+                ? 'Aucun pointage ne correspond aux critères sélectionnés.'
+                : 'Historique des présences récupéré avec succès.',
+            'data' => $resultat['data'],
+            'pagination' => $resultat['pagination'],
+        ]);
+    }
 
     public function listerCartesNfc(): JsonResponse
     {

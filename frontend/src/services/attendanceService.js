@@ -58,9 +58,12 @@ export async function getRoster({ classe, date } = {}) {
     })
     return { success: true, data }
   }
-  // À ajuster selon l'endpoint réel (ex. GET /api/students?classe=... + statut du jour)
-  const response = await api.get('/students', { params: { classe, per_page: 200 } })
-  return response.data
+  // L'endpoint /students ne filtre pas (encore) par classe côté back :
+  // on récupère tout et on filtre par nom de classe côté client.
+  const response = await api.get('/students', { params: { per_page: 1000 } })
+  const all = response.data?.data || []
+  const data = all.filter((e) => (e.classe?.nom_classe || '') === classe)
+  return { success: true, data }
 }
 
 /**
