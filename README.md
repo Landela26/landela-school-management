@@ -119,6 +119,8 @@ Principaux endpoints :
 
 Les endpoints de suppression logique et de réintégration des élèves sont décrits dans [docs/student-deletion-api.md](docs/student-deletion-api.md).
 
+La purge automatique des élèves dont la période de grâce est expirée est documentée dans [docs/student-purge-automation.md](docs/student-purge-automation.md).
+
 ---
 
 #  Workflow Git
