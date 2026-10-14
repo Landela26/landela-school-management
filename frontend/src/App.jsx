@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard'
 import EleveClasses from './pages/EleveClasses'
 import ClasseEleves from './pages/ClasseEleves'
 import EleveDetail from './pages/EleveDetail'
+import ElevesSupprimes from './pages/ElevesSupprimes'
 import CreateStudent from './pages/CreateStudent'
 import EditStudent from './pages/EditStudent'
 import ParametresPage from './pages/ParametresPage'
@@ -57,6 +58,7 @@ function App() {
         <Route path="/eleves/nouveau" element={<CreateStudent />} />
         <Route path="/eleves/classe/:classeId" element={<ClasseEleves />} />
         <Route path="/eleves/eleve/:id" element={<EleveDetail />} />
+        <Route path="/eleves/supprimes" element={<ElevesSupprimes />} />
         <Route path="/eleves/:id/modifier" element={<EditStudent />} />
         <Route path="/classes" element={<ClassesList />} />
         <Route path="/presences" element={<PresencesList />} />
