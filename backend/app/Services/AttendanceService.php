@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class AttendanceService
 {
+    public function __construct(private readonly SchoolSettingsService $settingsService) {}
     public function historique(array $filtres): array
     {
         $requete = Presence::query()
@@ -164,7 +165,7 @@ class AttendanceService
             ->latest('date_attribution')
             ->first();
 
-        return $this->pointage($eleve, $status, 'manuel', $attribution, $remark, $heure, false);
+        return $this->pointage($eleve, $status, 'manuel', $attribution, $remark, $heure);
     }
 
     public function scannerBadgeNfc(string $uid, string $status, ?string $remark = null, ?string $heure = null): ?Presence
@@ -184,7 +185,7 @@ class AttendanceService
             abort(404, 'Ce badge NFC n’est associé à aucun élève actif.');
         }
 
-        return $this->pointage($attribution->eleve, $status, 'nfc', $attribution, $remark, $heure, true);
+        return $this->pointage($attribution->eleve, $status, 'nfc', $attribution, $remark, $heure);
     }
 
     private function pointage(
@@ -193,8 +194,7 @@ class AttendanceService
         string $source,
         ?AttributionCarte $attribution,
         ?string $remark,
-        ?string $heure = null,
-        bool $autoClassifyLate = false
+        ?string $heure = null
     ): Presence {
         $dateHeure = $heure ? Carbon::parse($heure) : now();
 
@@ -214,7 +214,7 @@ class AttendanceService
             );
         }
 
-        $statut = $this->classifyStatus($status, $dateHeure, $autoClassifyLate);
+        $statut = $this->classifyStatus($status, $dateHeure);
         $nom = trim(implode(' ', array_filter([
             $eleve->nom,
             $eleve->postnom,
@@ -238,15 +238,15 @@ class AttendanceService
         ]);
     }
 
-    private function classifyStatus(string $status, Carbon $dateHeure, bool $autoClassifyLate): string
+    private function classifyStatus(string $status, Carbon $dateHeure): string
     {
-        if (!$autoClassifyLate || $status !== 'present') {
+        if ($status !== 'present') {
             return $status;
         }
 
         $lateAfter = Carbon::createFromFormat(
             'H:i',
-            (string) config('attendance.late_after', '08:00'),
+            $this->settingsService->getSettings()['late_after'],
             $dateHeure->getTimezone()
         )->setDate(
             $dateHeure->year,

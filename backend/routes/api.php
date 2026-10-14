@@ -6,6 +6,7 @@ use App\Http\Controllers\ClasseController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EleveController;
 use App\Http\Controllers\PersonnelController;
+use App\Http\Controllers\SettingsController;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
 
@@ -16,6 +17,8 @@ Route::middleware([StartSession::class])->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/auth/me', [AuthController::class, 'me']);
         Route::post('/auth/logout', [AuthController::class, 'logout']);
+        Route::get('/settings', [SettingsController::class, 'show']);
+        Route::put('/settings', [SettingsController::class, 'update']);
     });
 
     //dashboard route
@@ -24,6 +27,9 @@ Route::middleware([StartSession::class])->group(function () {
     //eleve route
     Route::middleware('auth:sanctum')->get("/students", [EleveController::class, 'index']);
     Route::middleware('auth:sanctum')->post("/students", [EleveController::class, 'store']);
+    Route::middleware('auth:sanctum')->get("/students/deleted", [EleveController::class, 'deleted']);
+    Route::middleware('auth:sanctum')->delete("/students/{id}", [EleveController::class, 'destroy']);
+    Route::middleware('auth:sanctum')->post("/students/{id}/restore", [EleveController::class, 'restore']);
     Route::middleware('auth:sanctum')->put("/students/{id}", [EleveController::class, 'update']);
     Route::middleware('auth:sanctum')->get("/students/{id}", [EleveController::class, 'show']);
 
