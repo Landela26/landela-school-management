@@ -2,6 +2,8 @@
 
 L’API F12 permet de retirer un élève de la liste active sans effacer son enregistrement, puis de le réintégrer pendant la période de grâce configurée par l’établissement.
 
+Pour la documentation de toutes les routes de l’application, l’authentification et les conventions de réponses, voir [api.md](./api.md).
+
 ## Accès
 
 Toutes les routes ci-dessous sont protégées par `auth:sanctum` et réservées aux rôles `admin` et `super_admin`. Un utilisateur non authentifié reçoit `401 Unauthorized` ; un utilisateur authentifié avec un autre rôle reçoit `403 Forbidden`.
@@ -65,7 +67,7 @@ GET /api/students/deleted?page=1&per_page=20
 Accept: application/json
 ```
 
-Les paramètres de pagination sont facultatifs : `page` est au minimum `1`, `per_page` est compris entre `1` et `100` (valeur par défaut : `20`). Les élèves expirés et les élèves actifs ne sont pas inclus. Les résultats sont triés par date de suppression décroissante.
+Les paramètres de pagination sont facultatifs : `page` est ramené au minimum à `1`, `per_page` est borné de `1` à `100` (valeur par défaut : `20`). Les élèves expirés et les élèves actifs ne sont pas inclus. Les résultats sont triés par date de suppression décroissante. Si la page dépasse le nombre de pages, l’API utilise la dernière page disponible.
 
 Exemple de réponse `200 OK` :
 
