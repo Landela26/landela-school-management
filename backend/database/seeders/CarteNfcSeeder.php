@@ -2,39 +2,44 @@
 
 namespace Database\Seeders;
 
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-use Carbon\Carbon;
 
+/**
+ * Cartes NFC de test : UID RÉELS des cartes physiques testées avec le lecteur
+ * ACR122U (format : hexadécimal majuscule, sans séparateur).
+ *
+ * La 5e carte de test (04302192741190) n'est volontairement PAS enregistrée :
+ * elle sert à tester le refus d'une carte inconnue (404).
+ */
 class CarteNfcSeeder extends Seeder
 {
+    /** id => [uid, numero_carte] */
+    public const CARTES = [
+        1 => ['048B5772FA1D90', 'NFC-000001'],
+        2 => ['04A5803AC31D90', 'NFC-000002'],
+        3 => ['04679A029A1B90', 'NFC-000003'],
+        4 => ['04A5BE3AC31D90', 'NFC-000004'],
+    ];
+
     public function run(): void
     {
         DB::table('cartes_nfc')->delete();
 
         $now = Carbon::now();
-        $cartes = [];
+        $rows = [];
 
-        $eleves = DB::table('eleves')
-            ->where('statut', 'actif')
-            ->orderBy('id_eleve')
-            ->get();
-
-        foreach ($eleves as $index => $eleve) {
-            $numero = $index + 1;
-
-            $cartes[] = [
-                'id' => $numero,
-                'uid' => Str::uuid()->toString(),
-                'numero_carte' => 'NFC-' . str_pad($numero, 6, '0', STR_PAD_LEFT),
+        foreach (self::CARTES as $id => [$uid, $numero]) {
+            $rows[] = [
+                'id' => $id,
+                'uid' => $uid,
+                'numero_carte' => $numero,
                 'statut' => 'actif',
                 'date_creation' => $now,
             ];
         }
 
-        if (!empty($cartes)) {
-            DB::table('cartes_nfc')->insert($cartes);
-        }
+        DB::table('cartes_nfc')->insert($rows);
     }
 }
